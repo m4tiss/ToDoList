@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:id="@+id/main"
     tools:context=".MainActivity">
@@ -11,25 +10,26 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
-            <TextView
+            <Spinner
+                android:id="@+id/spinner"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:text="Top bar"
-                android:gravity="center"
-                android:layout_weight="1"/>
+                android:padding="20sp"
+                android:layout_weight="5"/>
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:src="@drawable/settings"
-                android:padding="30dp"
+                android:padding="15dp"
                 android:id="@+id/settingsIcon"
                 />
         </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="5"/>
+            android:layout_weight="7"
+            android:id="@+id/recyclerTasks"/>
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_add_task"
             android:layout_width="wrap_content"
