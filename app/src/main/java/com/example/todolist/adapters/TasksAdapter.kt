@@ -1,4 +1,4 @@
-package com.example.todolist
+package com.example.todolist.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,8 +6,10 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.todolist.R
+import com.example.todolist.database.TaskModel
 
-class TasksAdapter(private val taskList: List<String>) :
+class TasksAdapter(private val taskList: List<TaskModel?>) :
     RecyclerView.Adapter<TasksAdapter.TaskViewHolder>() {
 
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -23,9 +25,15 @@ class TasksAdapter(private val taskList: List<String>) :
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val currentTask = taskList[position]
-
-        holder.taskTitleTextView.text = currentTask
-        holder.checkBox.isChecked = false
+        println("Zadanie")
+        if (currentTask != null) {
+            println("Tytuł")
+            println(currentTask.title)
+            holder.taskTitleTextView.text = currentTask.title
+        }
+        if (currentTask != null) {
+            holder.checkBox.isChecked = currentTask.completed == 1
+        }
 
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
 

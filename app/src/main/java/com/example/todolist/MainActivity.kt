@@ -1,4 +1,5 @@
 package com.example.todolist
+import DatabaseHandler
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.ArrayAdapter
@@ -6,17 +7,20 @@ import android.widget.ImageView
 import android.widget.Spinner
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.todolist.adapters.TasksAdapter
+import com.example.todolist.database.TaskModel
+import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var settingsImageView: ImageView
     private lateinit var spinner: Spinner
     private lateinit var recyclerTasks: RecyclerView
+    private lateinit var databaseHandler: DatabaseHandler
 
 
     @SuppressLint("MissingInflatedId")
@@ -42,10 +46,31 @@ class MainActivity : AppCompatActivity() {
         recyclerTasks.layoutManager = LinearLayoutManager(this)
 
 
-        val taskTitles = listOf("Zrobić zadanie", "Psa wyprowadzić", "Obejrzeć lige mistrzów", "Trening", "Czytać książke", "Zjeść megarollo")
-        val adapterRecycler = TasksAdapter(taskTitles)
-        recyclerTasks.adapter = adapterRecycler
+//        val taskTitles = emptyList<TaskModel>()
+//        val adapterRecycler = TasksAdapter(taskTitles)
+//        recyclerTasks.adapter = adapterRecycler
 
+        databaseHandler = DatabaseHandler(this)
+
+        val currentTime = Calendar.getInstance().time
+
+        val exampleTask = TaskModel(
+            id = 1,
+            title = "Obejrzeć ligę mistrzów",
+            description = "REAL-BVB",
+            creationTime = currentTime,
+            executionTime = null,
+            completed = 0,
+            notificationEnabled = 1,
+            category = "Sport",
+            attachments = emptyList()
+        )
+
+        databaseHandler.addTask(exampleTask)
+
+        val tasksFromDatabase = databaseHandler.getAllTasks()
+        val adapterRecycler = TasksAdapter(tasksFromDatabase)
+        recyclerTasks.adapter = adapterRecycler
 
         settingsImageView.setOnClickListener {
             showBottomSheet()
