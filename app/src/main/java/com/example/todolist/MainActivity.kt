@@ -63,9 +63,14 @@ class MainActivity : AppCompatActivity() {
 
 //        databaseHandler.addTask(exampleTask)
 
+
         val tasksFromDatabase = databaseHandler.getAllTasks()
-        val adapterRecycler = TasksAdapter(tasksFromDatabase)
+
+        val adapterRecycler = TasksAdapter(this,tasksFromDatabase) { taskId ->
+            databaseHandler.deleteTask(taskId)
+        }
         recyclerTasks.adapter = adapterRecycler
+        adapterRecycler.itemTouchHelper.attachToRecyclerView(recyclerTasks)
 
         settingsImageView.setOnClickListener {
             showBottomSheet()
