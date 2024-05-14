@@ -45,11 +45,6 @@ class MainActivity : AppCompatActivity() {
         recyclerTasks = findViewById(R.id.recyclerTasks)
         recyclerTasks.layoutManager = LinearLayoutManager(this)
 
-
-//        val taskTitles = emptyList<TaskModel>()
-//        val adapterRecycler = TasksAdapter(taskTitles)
-//        recyclerTasks.adapter = adapterRecycler
-
         databaseHandler = DatabaseHandler(this)
 
         val currentTime = Calendar.getInstance().time
@@ -66,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             attachments = emptyList()
         )
 
-        databaseHandler.addTask(exampleTask)
+//        databaseHandler.addTask(exampleTask)
 
         val tasksFromDatabase = databaseHandler.getAllTasks()
         val adapterRecycler = TasksAdapter(tasksFromDatabase)
