@@ -2,6 +2,7 @@ package com.example.todolist
 import DatabaseHandler
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Spinner
@@ -9,6 +10,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var databaseHandler: DatabaseHandler
     private lateinit var tasksViewModel: TasksViewModel
     private lateinit var tasksRepositoryImpl: TasksRepositoryImpl
+    private lateinit var fragmentAddTask: FragmentContainerView
 
 
     @SuppressLint("MissingInflatedId")
@@ -43,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         settingsImageView = findViewById(R.id.settingsIcon)
         spinner = findViewById(R.id.spinner)
         addTask = findViewById(R.id.addTask)
+        fragmentAddTask = findViewById(R.id.addTaskFragment)
 
         val options = arrayOf("All", "In process", "Finished")
 
@@ -58,22 +63,30 @@ class MainActivity : AppCompatActivity() {
         tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
         tasksViewModel = TasksViewModel(tasksRepositoryImpl)
 
+        val fragment = FragmentAddTask()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.addTaskFragment, fragment)
+            .commit()
+
+
 
         val currentTime = Calendar.getInstance().time
 
         addTask.setOnClickListener {
-            val exampleTask = TaskModel(
-                id = 1,
-                title = "Obejrzeć ligę mistrzów",
-                description = "REAL-BVB",
-                creationTime = currentTime,
-                executionTime = null,
-                completed = 0,
-                notificationEnabled = 1,
-                category = "Sport",
-                attachments = emptyList()
-            )
-            tasksViewModel.addTask(exampleTask)
+//            val exampleTask = TaskModel(
+//                id = 1,
+//                title = "Obejrzeć ligę mistrzów",
+//                description = "REAL-BVB",
+//                creationTime = currentTime,
+//                executionTime = null,
+//                completed = 0,
+//                notificationEnabled = 1,
+//                category = "Sport",
+//                attachments = emptyList()
+//            )
+//            tasksViewModel.addTask(exampleTask)
+            fragmentAddTask.visibility = View.VISIBLE
+            addTask.visibility = View.GONE
         }
 
 
