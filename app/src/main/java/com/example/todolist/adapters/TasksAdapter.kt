@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.R
 import com.example.todolist.database.TaskModel
 
-class TasksAdapter(private val context: Context, private var taskList: MutableList<TaskModel?>, private val onDeleteTask: (taskId: Int) -> Unit) :
+class TasksAdapter(private val context: Context, private var taskList: List<TaskModel>, private val onDeleteTask: (taskId: Int) -> Unit) :
     RecyclerView.Adapter<TasksAdapter.TaskViewHolder>() {
 
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -28,34 +28,32 @@ class TasksAdapter(private val context: Context, private var taskList: MutableLi
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val currentTask = taskList[position]
-        if (currentTask != null) {
-            holder.taskTitleTextView.text = currentTask.title
-            holder.checkBox.isChecked = currentTask.completed == 1
-        }
+        holder.taskTitleTextView.text = currentTask.title
+        holder.checkBox.isChecked = currentTask.completed == 1
 
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
-
+            // Here you can handle the checkbox checked state
+            // For example, update the completed status of the task
         }
     }
 
     override fun getItemCount(): Int {
         return taskList.size
     }
+
     fun deleteTask(position: Int) {
         val task = taskList[position]
-        if (task != null) {
-            onDeleteTask(task.id)
-            taskList.removeAt(position)
-            notifyItemRemoved(position)
-        }
+        onDeleteTask(task.id)
+        taskList = taskList.filterIndexed { index, _ -> index != position }
+        notifyItemRemoved(position)
     }
 
-    private fun showDeleteConfirmationDialog(postion: Int) {
+    private fun showDeleteConfirmationDialog(position: Int) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Delete Task")
         builder.setMessage("Are you sure you want to delete this task?")
         builder.setPositiveButton("Yes") { dialog, _ ->
-            deleteTask(postion)
+            deleteTask(position)
             dialog.dismiss()
         }
         builder.setNegativeButton("No") { dialog, _ ->
@@ -81,15 +79,13 @@ class TasksAdapter(private val context: Context, private var taskList: MutableLi
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val position = viewHolder.adapterPosition
                     showDeleteConfirmationDialog(position)
-
                 }
             }
         ItemTouchHelper(simpleItemTouchCallback)
     }
 
-//    fun setData(newTaskList: List<String>) {
-//        taskList.clear()
-//        taskList.addAll(newTaskList)
-//        notifyDataSetChanged()
-//    }
+    fun setData(newTaskList: List<TaskModel>) {
+        taskList = newTaskList
+        notifyDataSetChanged()
+    }
 }

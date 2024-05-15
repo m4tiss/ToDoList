@@ -9,10 +9,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.adapters.TasksAdapter
 import com.example.todolist.database.TaskModel
+import com.example.todolist.database.TasksRepositoryImpl
+import com.example.todolist.viewModels.TasksViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
@@ -20,7 +24,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var settingsImageView: ImageView
     private lateinit var spinner: Spinner
     private lateinit var recyclerTasks: RecyclerView
+    private lateinit var addTask: FloatingActionButton
     private lateinit var databaseHandler: DatabaseHandler
+    private lateinit var tasksViewModel: TasksViewModel
+    private lateinit var tasksRepositoryImpl: TasksRepositoryImpl
 
 
     @SuppressLint("MissingInflatedId")
@@ -35,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         }
         settingsImageView = findViewById(R.id.settingsIcon)
         spinner = findViewById(R.id.spinner)
+        addTask = findViewById(R.id.addTask)
 
         val options = arrayOf("All", "In process", "Finished")
 
@@ -45,30 +53,38 @@ class MainActivity : AppCompatActivity() {
         recyclerTasks = findViewById(R.id.recyclerTasks)
         recyclerTasks.layoutManager = LinearLayoutManager(this)
 
+
         databaseHandler = DatabaseHandler(this)
+        tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
+        tasksViewModel = TasksViewModel(tasksRepositoryImpl)
+
 
         val currentTime = Calendar.getInstance().time
 
-        val exampleTask = TaskModel(
-            id = 1,
-            title = "Obejrzeć ligę mistrzów",
-            description = "REAL-BVB",
-            creationTime = currentTime,
-            executionTime = null,
-            completed = 0,
-            notificationEnabled = 1,
-            category = "Sport",
-            attachments = emptyList()
-        )
-
-//        databaseHandler.addTask(exampleTask)
-
-
-        val tasksFromDatabase = databaseHandler.getAllTasks()
-
-        val adapterRecycler = TasksAdapter(this,tasksFromDatabase) { taskId ->
-            databaseHandler.deleteTask(taskId)
+        addTask.setOnClickListener {
+            val exampleTask = TaskModel(
+                id = 1,
+                title = "Obejrzeć ligę mistrzów",
+                description = "REAL-BVB",
+                creationTime = currentTime,
+                executionTime = null,
+                completed = 0,
+                notificationEnabled = 1,
+                category = "Sport",
+                attachments = emptyList()
+            )
+            tasksViewModel.addTask(exampleTask)
         }
+
+
+        val adapterRecycler = TasksAdapter(this, tasksViewModel.tasksData.value ?: listOf()) { taskId ->
+            tasksViewModel.deleteTask(taskId)
+        }
+
+        tasksViewModel.tasksData.observe(this) { tasks ->
+            adapterRecycler.setData(tasks)
+        }
+
         recyclerTasks.adapter = adapterRecycler
         adapterRecycler.itemTouchHelper.attachToRecyclerView(recyclerTasks)
 
