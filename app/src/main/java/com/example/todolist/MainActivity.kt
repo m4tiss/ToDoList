@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.adapters.TasksAdapter
 import com.example.todolist.database.TaskModel
 import com.example.todolist.database.TasksRepositoryImpl
+import com.example.todolist.fragments.FragmentSettings
 import com.example.todolist.viewModels.TasksViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.Calendar
@@ -103,7 +104,6 @@ class MainActivity : AppCompatActivity() {
 
         settingsImageView.setOnClickListener {
             showBottomSheet()
-
         }
     }
     override fun onBackPressed() {
@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun showBottomSheet() {
-        val modalBottomSheet = ModalBottomSheet()
-        modalBottomSheet.show(supportFragmentManager, ModalBottomSheet.TAG)
+        val bottomSheetFragment = ModalBottomSheet(supportFragmentManager)
+        bottomSheetFragment.show(supportFragmentManager, ModalBottomSheet.TAG)
     }
 }
