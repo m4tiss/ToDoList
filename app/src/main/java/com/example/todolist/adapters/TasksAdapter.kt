@@ -60,6 +60,9 @@ class TasksAdapter(private val context: Context, private var taskList: List<Task
             notifyDataSetChanged()
             dialog.dismiss()
         }
+        builder.setOnCancelListener {
+            notifyDataSetChanged()
+        }
         val dialog = builder.create()
         dialog.show()
     }
