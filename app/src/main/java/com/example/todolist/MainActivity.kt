@@ -103,6 +103,20 @@ class MainActivity : AppCompatActivity() {
 
         settingsImageView.setOnClickListener {
             showBottomSheet()
+
+        }
+    }
+    override fun onBackPressed() {
+        val fragmentManager = supportFragmentManager
+        val fragment = fragmentManager.findFragmentById(R.id.addTaskFragment)
+
+        if (fragment != null && fragment.isVisible) {
+            fragmentAddTask.visibility = View.GONE
+            addTask.visibility = View.VISIBLE
+        } else {
+            fragmentAddTask.visibility = View.VISIBLE
+            addTask.visibility = View.GONE
+            super.onBackPressed()
         }
     }
     private fun showBottomSheet() {
