@@ -19,6 +19,7 @@ import com.example.todolist.adapters.TasksAdapter
 import com.example.todolist.database.TaskModel
 import com.example.todolist.database.TasksRepositoryImpl
 import com.example.todolist.fragments.FragmentSettings
+import com.example.todolist.fragments.FragmentTaskDetails
 import com.example.todolist.viewModels.TasksViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.Calendar
@@ -97,6 +98,17 @@ class MainActivity : AppCompatActivity() {
                 task?.let {
                     val newStatus = if (it.completed == 1) 0 else 1
                     tasksViewModel.updateStatus(taskId, newStatus)
+                }
+            },
+            onTaskItemClick = { taskId ->
+                val task = tasksViewModel.tasksData.value?.find { it.id == taskId }
+                task?.let {
+                    val fragment = FragmentTaskDetails(it)
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.main, fragment)
+                        .addToBackStack(null)
+                        .commit()
+                    addTask.visibility = View.GONE
                 }
             }
         )

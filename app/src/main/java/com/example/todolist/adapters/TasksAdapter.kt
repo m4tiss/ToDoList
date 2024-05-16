@@ -15,7 +15,8 @@ import com.example.todolist.database.TaskModel
 class TasksAdapter(private val context: Context,
                    private var taskList: List<TaskModel>,
                    private val onDeleteTask: (taskId: Int) -> Unit,
-                   private val onClickCheckBox : (taskId: Int) -> Unit) :
+                   private val onClickCheckBox : (taskId: Int) -> Unit,
+                    private val onTaskItemClick: (Int) -> Unit):
     RecyclerView.Adapter<TasksAdapter.TaskViewHolder>() {
 
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -37,6 +38,11 @@ class TasksAdapter(private val context: Context,
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
             val taskId = currentTask.id
             onClickCheckBox(taskId)
+        }
+
+        holder.itemView.setOnClickListener {
+            val taskId = currentTask.id
+            onTaskItemClick(taskId)
         }
     }
 
