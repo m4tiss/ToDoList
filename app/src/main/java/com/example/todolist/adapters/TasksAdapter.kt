@@ -11,11 +11,12 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.R
 import com.example.todolist.database.TaskModel
+import com.example.todolist.viewModels.TasksViewModel
 
 class TasksAdapter(private val context: Context,
                    private var taskList: List<TaskModel>,
+                   private val tasksViewModel: TasksViewModel,
                    private val onDeleteTask: (taskId: Int) -> Unit,
-                   private val onClickCheckBox : (taskId: Int) -> Unit,
                     private val onTaskItemClick: (Int) -> Unit):
     RecyclerView.Adapter<TasksAdapter.TaskViewHolder>() {
 
@@ -35,11 +36,11 @@ class TasksAdapter(private val context: Context,
         holder.taskTitleTextView.text = currentTask.title
         holder.checkBox.isChecked = currentTask.completed == 1
 
-        holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
+        holder.checkBox.setOnClickListener {
             val taskId = currentTask.id
-            onClickCheckBox(taskId)
+            val newStatus = if (currentTask.completed == 1) 0 else 1
+            tasksViewModel.updateStatus(taskId, newStatus)
         }
-
         holder.itemView.setOnClickListener {
             val taskId = currentTask.id
             onTaskItemClick(taskId)

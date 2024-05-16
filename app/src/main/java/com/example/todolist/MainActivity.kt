@@ -3,6 +3,7 @@ import DatabaseHandler
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Spinner
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var databaseHandler: DatabaseHandler
     private lateinit var tasksViewModel: TasksViewModel
     private lateinit var tasksRepositoryImpl: TasksRepositoryImpl
+    lateinit var adapterRecycler: TasksAdapter
 
 
     @SuppressLint("MissingInflatedId")
@@ -53,6 +55,17 @@ class MainActivity : AppCompatActivity() {
         val adapterSpinner = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
         adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapterSpinner
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedItem = options[position]
+                filterTasks(selectedItem)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+        }
+
 
         recyclerTasks = findViewById(R.id.recyclerTasks)
         recyclerTasks.layoutManager = LinearLayoutManager(this)
@@ -93,19 +106,13 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        val adapterRecycler = TasksAdapter(
+        adapterRecycler = TasksAdapter(
             this,
             tasksViewModel.tasksData.value ?: listOf(),
             onDeleteTask = { taskId ->
                 tasksViewModel.deleteTask(taskId)
             },
-            onClickCheckBox = { taskId ->
-                val task = tasksViewModel.tasksData.value?.find { it.id == taskId }
-                task?.let {
-                    val newStatus = if (it.completed == 1) 0 else 1
-                    tasksViewModel.updateStatus(taskId, newStatus)
-                }
-            },
+            tasksViewModel = tasksViewModel,
             onTaskItemClick = { taskId ->
                 val task = tasksViewModel.tasksData.value?.find { it.id == taskId }
                 task?.let {
@@ -144,4 +151,19 @@ class MainActivity : AppCompatActivity() {
         val bottomSheetFragment = ModalBottomSheet(supportFragmentManager)
         bottomSheetFragment.show(supportFragmentManager, ModalBottomSheet.TAG)
     }
+
+    private fun filterTasks(selectedItem: String) {
+        val filteredTasks = when (selectedItem) {
+            "All" -> tasksViewModel.tasksData.value ?: listOf()
+            "In process" -> tasksViewModel.tasksData.value?.filter { it.completed == 0 } ?: listOf()
+            "Finished" -> tasksViewModel.tasksData.value?.filter { it.completed == 1 } ?: listOf()
+            else -> listOf()
+        }
+
+        if (!recyclerTasks.isComputingLayout && !recyclerTasks.isAnimating) {
+            adapterRecycler.setData(filteredTasks)
+            adapterRecycler.notifyDataSetChanged()
+        }
+    }
+
 }
