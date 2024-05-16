@@ -80,6 +80,12 @@ class MainActivity : AppCompatActivity() {
 //            tasksViewModel.addTask(exampleTask)
             val fragment = FragmentAddTask()
             supportFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom,
+                    androidx.appcompat.R.anim.abc_shrink_fade_out_from_bottom,
+                    androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom,
+                    androidx.appcompat.R.anim.abc_shrink_fade_out_from_bottom
+                )
                 .replace(R.id.main, fragment)
                 .addToBackStack(null)
                 .commit()
@@ -103,8 +109,14 @@ class MainActivity : AppCompatActivity() {
             onTaskItemClick = { taskId ->
                 val task = tasksViewModel.tasksData.value?.find { it.id == taskId }
                 task?.let {
-                    val fragment = FragmentTaskDetails(it)
+                    val fragment = FragmentTaskDetails(it,tasksViewModel)
                     supportFragmentManager.beginTransaction()
+                        .setCustomAnimations(
+                            androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom,
+                            androidx.appcompat.R.anim.abc_shrink_fade_out_from_bottom,
+                            androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom,
+                            androidx.appcompat.R.anim.abc_shrink_fade_out_from_bottom
+                        )
                         .replace(R.id.main, fragment)
                         .addToBackStack(null)
                         .commit()
@@ -114,8 +126,12 @@ class MainActivity : AppCompatActivity() {
         )
 
         tasksViewModel.tasksData.observe(this) { tasks ->
-            adapterRecycler.setData(tasks)
+            if (!recyclerTasks.isComputingLayout && !recyclerTasks.isAnimating) {
+                adapterRecycler.setData(tasks)
+                adapterRecycler.notifyDataSetChanged()
+            }
         }
+
 
         recyclerTasks.adapter = adapterRecycler
         adapterRecycler.itemTouchHelper.attachToRecyclerView(recyclerTasks)
