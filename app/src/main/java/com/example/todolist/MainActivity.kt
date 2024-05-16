@@ -28,7 +28,6 @@ import java.util.Calendar
 class MainActivity : AppCompatActivity() {
 
     private lateinit var settingsImageView: ImageView
-    private lateinit var spinner: Spinner
     private lateinit var recyclerTasks: RecyclerView
     lateinit var addTask: FloatingActionButton
     private lateinit var databaseHandler: DatabaseHandler
@@ -48,23 +47,8 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         settingsImageView = findViewById(R.id.settingsIcon)
-        spinner = findViewById(R.id.spinner)
         addTask = findViewById(R.id.addTask)
-        val options = arrayOf("All", "In process", "Finished")
 
-        val adapterSpinner = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
-        adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapterSpinner
-
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedItem = options[position]
-                filterTasks(selectedItem)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
-        }
 
 
         recyclerTasks = findViewById(R.id.recyclerTasks)
@@ -148,22 +132,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun showBottomSheet() {
-        val bottomSheetFragment = ModalBottomSheet(supportFragmentManager)
+        val bottomSheetFragment = ModalBottomSheet(tasksViewModel,recyclerTasks,adapterRecycler)
         bottomSheetFragment.show(supportFragmentManager, ModalBottomSheet.TAG)
-    }
-
-    private fun filterTasks(selectedItem: String) {
-        val filteredTasks = when (selectedItem) {
-            "All" -> tasksViewModel.tasksData.value ?: listOf()
-            "In process" -> tasksViewModel.tasksData.value?.filter { it.completed == 0 } ?: listOf()
-            "Finished" -> tasksViewModel.tasksData.value?.filter { it.completed == 1 } ?: listOf()
-            else -> listOf()
-        }
-
-        if (!recyclerTasks.isComputingLayout && !recyclerTasks.isAnimating) {
-            adapterRecycler.setData(filteredTasks)
-            adapterRecycler.notifyDataSetChanged()
-        }
     }
 
 }

@@ -5,13 +5,19 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.todolist.adapters.TasksAdapter
 import com.example.todolist.fragments.FragmentSettings
+import com.example.todolist.viewModels.TasksViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
-class ModalBottomSheet(private val fragmentManager: FragmentManager) : BottomSheetDialogFragment(R.layout.bottom_sheet) {
+class ModalBottomSheet(
+                        private val tasksViewModel: TasksViewModel,
+                       private val recyclerTasks: RecyclerView,
+                       private val adapterRecycler: TasksAdapter) : BottomSheetDialogFragment(R.layout.bottom_sheet) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +31,7 @@ class ModalBottomSheet(private val fragmentManager: FragmentManager) : BottomShe
         behavior.isDraggable = true
 
         val preferencesFragmentContainer = view.findViewById<FragmentContainerView>(R.id.settingsFragment)
-        val fragmentSettings = FragmentSettings()
+        val fragmentSettings = FragmentSettings(tasksViewModel,recyclerTasks,adapterRecycler)
         childFragmentManager.beginTransaction()
             .replace(preferencesFragmentContainer.id, fragmentSettings)
             .commit()

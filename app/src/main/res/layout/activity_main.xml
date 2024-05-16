@@ -15,13 +15,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1">
-                <Spinner
-                    android:id="@+id/spinner"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:padding="20sp"
-                    android:layout_weight="5"
-                    />
+<!--                <Spinner-->
+<!--                    android:id="@+id/spinner"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:padding="20sp"-->
+<!--                    android:layout_weight="5"-->
+<!--                    />-->
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/settingsIcon"
                     android:layout_width="wrap_content"
