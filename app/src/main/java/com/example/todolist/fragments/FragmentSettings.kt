@@ -7,11 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.R
 import com.example.todolist.adapters.TasksAdapter
+import com.example.todolist.database.TaskModel
 import com.example.todolist.viewModels.TasksViewModel
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -26,6 +28,12 @@ class FragmentSettings(
     private lateinit var spinner: Spinner
     private lateinit var toggleButton: MaterialButtonToggleGroup
     private lateinit var saveChangesButton: ExtendedFloatingActionButton
+    private lateinit var AllButton: Button
+    private lateinit var SportButton: Button
+    private lateinit var FamilyButton: Button
+    private lateinit var JobButton: Button
+    var isProgrammaticChange = false
+    var selectedCategory = "All"
 
 
 
@@ -47,98 +55,62 @@ class FragmentSettings(
         adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapterSpinner
 
-//        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-//            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-//                val selectedItem = options[position]
-//                filterTasks(selectedItem)
-//            }
-//
-//            override fun onNothingSelected(parent: AdapterView<*>?) {
-//            }
-//        }
 
         toggleButton = view.findViewById(R.id.toggleButton)
+        AllButton = view.findViewById(R.id.All)
+        SportButton = view.findViewById(R.id.Sport)
+        FamilyButton = view.findViewById(R.id.Family)
+        JobButton = view.findViewById(R.id.Job)
 
-        toggleButton.check(R.id.All)
+        toggleButton.check(AllButton.id)
 
-        toggleButton.addOnButtonCheckedListener { group, checkedId, isChecked ->
-            if (isChecked) {
-                if (checkedId != R.id.All) {
-                    toggleButton.uncheck(R.id.All)
-                }
-                if (checkedId != R.id.Sport) {
-                    toggleButton.uncheck(R.id.Sport)
-                }
-                if (checkedId != R.id.Family) {
-                    toggleButton.uncheck(R.id.Family)
-                }
-                if (checkedId != R.id.Job) {
-                    toggleButton.uncheck(R.id.Job)
-                }
+        toggleButton.addOnButtonCheckedListener { group, selectedId, isSelected ->
+            if (!isProgrammaticChange && isSelected) {
+                isProgrammaticChange = true
+                val checkedButton = group.findViewById<Button>(selectedId)
+                selectedCategory = checkedButton.tag as? String ?: "All"
+                toggleButton.clearChecked()
+                toggleButton.check(selectedId)
+                isProgrammaticChange = false
             }
         }
 
         saveChangesButton.setOnClickListener {
-
-            val selectedCategory = when (toggleButton.checkedButtonId) {
-                R.id.All -> "All"
-                R.id.Sport -> "Sport"
-                R.id.Family -> "Family"
-                R.id.Job -> "Job"
-                else -> "All"
-            }
-
             val selectedStatus = spinner.selectedItem.toString()
-
-
-            filterTasks(selectedCategory,selectedStatus)
+            filterTasks(selectedCategory, selectedStatus)
             onCloseModal()
         }
+
         return view
     }
 
 
     private fun filterTasks(selectedCategory: String, selectedStatus: String) {
-        val filteredTasks = when (selectedCategory) {
-            "All" -> {
-                when (selectedStatus) {
-                    "All" -> tasksViewModel.tasksData.value ?: listOf()
-                    "In Progress" -> tasksViewModel.tasksData.value?.filter { it.completed == 0 } ?: listOf()
-                    "Completed" -> tasksViewModel.tasksData.value?.filter { it.completed == 1 } ?: listOf()
-                    else -> listOf()
+        val filteredTasks = tasksViewModel.tasksData.value?.let { allTasks ->
+            when (selectedCategory) {
+                "All" -> filterTasksByStatus(allTasks, selectedStatus)
+                "Sport", "Family", "Job" -> {
+                    val categoryTasks = allTasks.filter { it.category == selectedCategory }
+                    filterTasksByStatus(categoryTasks, selectedStatus)
                 }
+                else -> listOf()
             }
-            "Sport" -> {
-                when (selectedStatus) {
-                    "All" -> tasksViewModel.tasksData.value ?: listOf()
-                    "In Progress" -> tasksViewModel.tasksData.value?.filter { it.completed == 0 } ?: listOf()
-                    "Completed" -> tasksViewModel.tasksData.value?.filter { it.completed == 1 } ?: listOf()
-                    else -> listOf()
-                }
-            }
-            "Family" -> {
-                when (selectedStatus) {
-                    "All" -> tasksViewModel.tasksData.value ?: listOf()
-                    "In Progress" -> tasksViewModel.tasksData.value?.filter { it.completed == 0 } ?: listOf()
-                    "Completed" -> tasksViewModel.tasksData.value?.filter { it.completed == 1 } ?: listOf()
-                    else -> listOf()
-                }
-            }
-            "Job" -> {
-                when (selectedStatus) {
-                    "All" -> tasksViewModel.tasksData.value ?: listOf()
-                    "In Progress" -> tasksViewModel.tasksData.value?.filter { it.completed == 0 } ?: listOf()
-                    "Completed" -> tasksViewModel.tasksData.value?.filter { it.completed == 1 } ?: listOf()
-                    else -> listOf()
-                }
-            }
-            else -> listOf()
-        }
+        } ?: listOf()
 
         if (!recyclerTasks.isComputingLayout && !recyclerTasks.isAnimating) {
             adapterRecycler.setData(filteredTasks)
             adapterRecycler.notifyDataSetChanged()
         }
     }
+
+    private fun filterTasksByStatus(tasks: List<TaskModel>, selectedStatus: String): List<TaskModel> {
+        return when (selectedStatus) {
+            "All" -> tasks
+            "In process" -> tasks.filter { it.completed == 0 }
+            "Finished" -> tasks.filter { it.completed == 1 }
+            else -> listOf()
+        }
+    }
+
 
 }

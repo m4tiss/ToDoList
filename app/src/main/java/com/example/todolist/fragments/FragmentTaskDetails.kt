@@ -22,6 +22,7 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
     private lateinit var taskDescription: TextView
     private lateinit var executionTime: TextView
     private lateinit var creationTime: TextView
+    private lateinit var taskCategory: TextView
     private lateinit var completedImageView: ImageView
     private lateinit var notificationSwitch: SwitchCompat
 
@@ -39,11 +40,13 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
         executionTime = view.findViewById(R.id.executionTimeTextView)
         creationTime = view.findViewById(R.id.creationTimeTextView)
         completedImageView = view.findViewById(R.id.completedImageView)
+        taskCategory = view.findViewById(R.id.categoryTextView)
         notificationSwitch = view.findViewById(R.id.notificationSwitch)
 
 
         taskTitle.text = task.title
         taskDescription.text = task.description
+        taskCategory.text = task.category
         creationTime.text = task.creationTime.toString()
         executionTime.text = task.executionTime.toString()
         if (task.completed == 1) {
