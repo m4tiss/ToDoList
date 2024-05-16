@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
 import androidx.activity.enableEdgeToEdge
@@ -27,12 +28,14 @@ import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var settingsImageView: ImageView
-    private lateinit var recyclerTasks: RecyclerView
+    lateinit var settingsImageView: ImageView
+    lateinit var recyclerTasks: RecyclerView
     lateinit var addTask: FloatingActionButton
-    private lateinit var databaseHandler: DatabaseHandler
-    private lateinit var tasksViewModel: TasksViewModel
-    private lateinit var tasksRepositoryImpl: TasksRepositoryImpl
+    lateinit var searchButton: ImageView
+    lateinit var searchText: EditText
+    lateinit var databaseHandler: DatabaseHandler
+    lateinit var tasksViewModel: TasksViewModel
+    lateinit var tasksRepositoryImpl: TasksRepositoryImpl
     lateinit var adapterRecycler: TasksAdapter
 
 
@@ -48,6 +51,8 @@ class MainActivity : AppCompatActivity() {
         }
         settingsImageView = findViewById(R.id.settingsIcon)
         addTask = findViewById(R.id.addTask)
+        searchButton = findViewById(R.id.searchButton)
+        searchText = findViewById(R.id.searchText)
 
 
 
@@ -65,13 +70,13 @@ class MainActivity : AppCompatActivity() {
         addTask.setOnClickListener {
 //            val exampleTask = TaskModel(
 //                id = 1,
-//                title = "Obejrzeć ligę mistrzów",
-//                description = "REAL-BVB",
+//                title = "Testowanie",
+//                description = "Testowanie Testowanie Testowanie Testowanie",
 //                creationTime = currentTime,
 //                executionTime = null,
 //                completed = 0,
 //                notificationEnabled = 1,
-//                category = "Sport",
+//                category = "Family",
 //                attachments = emptyList()
 //            )
 //            tasksViewModel.addTask(exampleTask)
@@ -88,6 +93,23 @@ class MainActivity : AppCompatActivity() {
                 .commit()
             addTask.visibility = View.GONE
         }
+
+        searchButton.setOnClickListener {
+            val query = searchText.text.toString().trim()
+            if (query.isNotEmpty()) {
+                val filteredTasks = tasksViewModel.tasksData.value?.filter { it.title.contains(query, ignoreCase = true) }
+                filteredTasks?.let {
+                    adapterRecycler.setData(it)
+                    adapterRecycler.notifyDataSetChanged()
+                }
+            } else {
+                tasksViewModel.tasksData.value?.let {
+                    adapterRecycler.setData(it)
+                    adapterRecycler.notifyDataSetChanged()
+                }
+            }
+        }
+
 
 
         adapterRecycler = TasksAdapter(
@@ -128,6 +150,7 @@ class MainActivity : AppCompatActivity() {
         adapterRecycler.itemTouchHelper.attachToRecyclerView(recyclerTasks)
 
         settingsImageView.setOnClickListener {
+            searchText.text.clear()
             showBottomSheet()
         }
     }
