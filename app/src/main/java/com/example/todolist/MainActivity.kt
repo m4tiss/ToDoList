@@ -28,11 +28,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var settingsImageView: ImageView
     private lateinit var spinner: Spinner
     private lateinit var recyclerTasks: RecyclerView
-    private lateinit var addTask: FloatingActionButton
+    lateinit var addTask: FloatingActionButton
     private lateinit var databaseHandler: DatabaseHandler
     private lateinit var tasksViewModel: TasksViewModel
     private lateinit var tasksRepositoryImpl: TasksRepositoryImpl
-    private lateinit var fragmentAddTask: FragmentContainerView
 
 
     @SuppressLint("MissingInflatedId")
@@ -48,8 +47,6 @@ class MainActivity : AppCompatActivity() {
         settingsImageView = findViewById(R.id.settingsIcon)
         spinner = findViewById(R.id.spinner)
         addTask = findViewById(R.id.addTask)
-        fragmentAddTask = findViewById(R.id.addTaskFragment)
-
         val options = arrayOf("All", "In process", "Finished")
 
         val adapterSpinner = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
@@ -63,12 +60,6 @@ class MainActivity : AppCompatActivity() {
         databaseHandler = DatabaseHandler(this)
         tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
         tasksViewModel = TasksViewModel(tasksRepositoryImpl)
-
-        val fragment = FragmentAddTask()
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.addTaskFragment, fragment)
-            .commit()
-
 
 
         val currentTime = Calendar.getInstance().time
@@ -86,7 +77,11 @@ class MainActivity : AppCompatActivity() {
 //                attachments = emptyList()
 //            )
 //            tasksViewModel.addTask(exampleTask)
-            fragmentAddTask.visibility = View.VISIBLE
+            val fragment = FragmentAddTask()
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main, fragment)
+                .addToBackStack(null)
+                .commit()
             addTask.visibility = View.GONE
         }
 
@@ -115,19 +110,6 @@ class MainActivity : AppCompatActivity() {
 
         settingsImageView.setOnClickListener {
             showBottomSheet()
-        }
-    }
-    override fun onBackPressed() {
-        val fragmentManager = supportFragmentManager
-        val fragment = fragmentManager.findFragmentById(R.id.addTaskFragment)
-
-        if (fragment != null && fragment.isVisible) {
-            fragmentAddTask.visibility = View.GONE
-            addTask.visibility = View.VISIBLE
-        } else {
-            fragmentAddTask.visibility = View.VISIBLE
-            addTask.visibility = View.GONE
-            super.onBackPressed()
         }
     }
     private fun showBottomSheet() {
