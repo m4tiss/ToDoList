@@ -91,9 +91,20 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        val adapterRecycler = TasksAdapter(this, tasksViewModel.tasksData.value ?: listOf()) { taskId ->
-            tasksViewModel.deleteTask(taskId)
-        }
+        val adapterRecycler = TasksAdapter(
+            this,
+            tasksViewModel.tasksData.value ?: listOf(),
+            onDeleteTask = { taskId ->
+                tasksViewModel.deleteTask(taskId)
+            },
+            onClickCheckBox = { taskId ->
+                val task = tasksViewModel.tasksData.value?.find { it.id == taskId }
+                task?.let {
+                    val newStatus = if (it.completed == 1) 0 else 1
+                    tasksViewModel.updateStatus(taskId, newStatus)
+                }
+            }
+        )
 
         tasksViewModel.tasksData.observe(this) { tasks ->
             adapterRecycler.setData(tasks)

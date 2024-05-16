@@ -12,7 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.R
 import com.example.todolist.database.TaskModel
 
-class TasksAdapter(private val context: Context, private var taskList: List<TaskModel>, private val onDeleteTask: (taskId: Int) -> Unit) :
+class TasksAdapter(private val context: Context,
+                   private var taskList: List<TaskModel>,
+                   private val onDeleteTask: (taskId: Int) -> Unit,
+                   private val onClickCheckBox : (taskId: Int) -> Unit) :
     RecyclerView.Adapter<TasksAdapter.TaskViewHolder>() {
 
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -32,8 +35,8 @@ class TasksAdapter(private val context: Context, private var taskList: List<Task
         holder.checkBox.isChecked = currentTask.completed == 1
 
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
-            // Here you can handle the checkbox checked state
-            // For example, update the completed status of the task
+            val taskId = currentTask.id
+            onClickCheckBox(taskId)
         }
     }
 
