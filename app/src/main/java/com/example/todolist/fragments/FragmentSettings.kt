@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
@@ -28,14 +27,19 @@ class FragmentSettings(
 
     private lateinit var spinner: Spinner
     private lateinit var spinnerNotification: Spinner
-    private lateinit var toggleButton: MaterialButtonToggleGroup
+    private lateinit var toggleCategoryButton: MaterialButtonToggleGroup
+    private lateinit var toggleSortButton: MaterialButtonToggleGroup
     private lateinit var saveChangesButton: ExtendedFloatingActionButton
     private lateinit var AllButton: Button
     private lateinit var SportButton: Button
     private lateinit var FamilyButton: Button
     private lateinit var JobButton: Button
-    var isProgrammaticChange = false
+    private lateinit var UrgentButton: Button
+    private lateinit var NonUrgentButton: Button
+    var isProgrammaticChangeCategory = false
+    var isProgrammaticChangeSort = false
     var selectedCategory = "All"
+    var selectedSort = "Urgent"
 
 
 
@@ -76,24 +80,42 @@ class FragmentSettings(
 
 
 
-        toggleButton = view.findViewById(R.id.toggleButton)
+        toggleCategoryButton = view.findViewById(R.id.toggleButton)
+        toggleSortButton = view.findViewById(R.id.sortToggleButton)
         AllButton = view.findViewById(R.id.All)
         SportButton = view.findViewById(R.id.Sport)
         FamilyButton = view.findViewById(R.id.Family)
         JobButton = view.findViewById(R.id.Job)
+        UrgentButton = view.findViewById(R.id.Urgent)
+        NonUrgentButton = view.findViewById(R.id.NonUrgent)
 
-        toggleButton.check(AllButton.id)
+        toggleCategoryButton.check(AllButton.id)
 
-        toggleButton.addOnButtonCheckedListener { group, selectedId, isSelected ->
-            if (!isProgrammaticChange && isSelected) {
-                isProgrammaticChange = true
+        toggleCategoryButton.addOnButtonCheckedListener { group, selectedId, isSelected ->
+            if (!isProgrammaticChangeCategory && isSelected) {
+                isProgrammaticChangeCategory = true
                 val checkedButton = group.findViewById<Button>(selectedId)
                 selectedCategory = checkedButton.tag as? String ?: "All"
-                toggleButton.clearChecked()
-                toggleButton.check(selectedId)
-                isProgrammaticChange = false
+                toggleCategoryButton.clearChecked()
+                toggleCategoryButton.check(selectedId)
+                isProgrammaticChangeCategory = false
             }
         }
+
+
+        toggleSortButton.check(UrgentButton.id)
+
+        toggleSortButton.addOnButtonCheckedListener { group, selectedId, isSelected ->
+            if (!isProgrammaticChangeSort && isSelected) {
+                isProgrammaticChangeSort = true
+                val checkedButton = group.findViewById<Button>(selectedId)
+                selectedSort = checkedButton.tag as? String ?: "Urgent"
+                toggleSortButton.clearChecked()
+                toggleSortButton.check(selectedId)
+                isProgrammaticChangeSort = false
+            }
+        }
+
 
         saveChangesButton.setOnClickListener {
 
@@ -107,10 +129,10 @@ class FragmentSettings(
             }
             prefs.edit().putInt("NotificationTime", notificationTimeInMinutes).apply()
 
-
+            println(selectedSort)
 
             val selectedStatus = spinner.selectedItem.toString()
-            filterTasks(selectedCategory, selectedStatus)
+            filterTasks(selectedCategory, selectedStatus,selectedSort)
             onCloseModal()
         }
 
@@ -118,7 +140,7 @@ class FragmentSettings(
     }
 
 
-    private fun filterTasks(selectedCategory: String, selectedStatus: String) {
+    private fun filterTasks(selectedCategory: String, selectedStatus: String,selectedSort: String) {
         val filteredTasks = tasksViewModel.tasksData.value?.let { allTasks ->
             when (selectedCategory) {
                 "All" -> filterTasksByStatus(allTasks, selectedStatus)
@@ -130,8 +152,22 @@ class FragmentSettings(
             }
         } ?: listOf()
 
+        val sortedTasks = when (selectedSort) {
+            "Urgent" -> {
+                filteredTasks.sortedWith(compareBy { task ->
+                    task.executionTime?.time ?: Long.MAX_VALUE
+                })
+            }
+            "NonUrgent" -> {
+                filteredTasks.sortedWith(compareByDescending { task ->
+                    task.executionTime?.time ?: Long.MIN_VALUE
+                })
+            }
+            else -> filteredTasks
+        }
+
         if (!recyclerTasks.isComputingLayout && !recyclerTasks.isAnimating) {
-            adapterRecycler.setData(filteredTasks)
+            adapterRecycler.setData(sortedTasks)
             adapterRecycler.notifyDataSetChanged()
         }
     }
