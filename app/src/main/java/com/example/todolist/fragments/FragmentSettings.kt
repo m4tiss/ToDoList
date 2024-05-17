@@ -36,10 +36,10 @@ class FragmentSettings(
     private lateinit var JobButton: Button
     private lateinit var UrgentButton: Button
     private lateinit var NonUrgentButton: Button
-    var isProgrammaticChangeCategory = false
-    var isProgrammaticChangeSort = false
-    var selectedCategory = "All"
-    var selectedSort = "Urgent"
+    private var isProgrammaticChangeCategory = false
+    private var isProgrammaticChangeSort = false
+    private var selectedCategory = "All"
+    private var selectedSort = "Urgent"
 
 
 
@@ -128,8 +128,6 @@ class FragmentSettings(
                 else -> 1
             }
             prefs.edit().putInt("NotificationTime", notificationTimeInMinutes).apply()
-
-            println(selectedSort)
 
             val selectedStatus = spinner.selectedItem.toString()
             filterTasks(selectedCategory, selectedStatus,selectedSort)
