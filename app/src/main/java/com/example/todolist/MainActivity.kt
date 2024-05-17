@@ -1,6 +1,7 @@
 package com.example.todolist
 import DatabaseHandler
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -55,6 +56,10 @@ class MainActivity : AppCompatActivity() {
         searchText = findViewById(R.id.searchText)
 
 
+        val prefs = getSharedPreferences("com.example.todolist.preferences", Context.MODE_PRIVATE)
+        if (!prefs.contains("NotificationTime")) {
+            prefs.edit().putInt("NotificationTime", 1).apply()
+        }
 
         recyclerTasks = findViewById(R.id.recyclerTasks)
         recyclerTasks.layoutManager = LinearLayoutManager(this)
@@ -70,13 +75,13 @@ class MainActivity : AppCompatActivity() {
         addTask.setOnClickListener {
 //            val exampleTask = TaskModel(
 //                id = 1,
-//                title = "Testowanie",
-//                description = "Testowanie Testowanie Testowanie Testowanie",
+//                title = "Mniej pline",
+//                description = "Mniej pline Mniej pline Mniej pline Mniej pline",
 //                creationTime = currentTime,
-//                executionTime = null,
+//                executionTime = currentTime,
 //                completed = 0,
 //                notificationEnabled = 1,
-//                category = "Family",
+//                category = "Job",
 //                attachments = emptyList()
 //            )
 //            tasksViewModel.addTask(exampleTask)

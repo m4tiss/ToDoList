@@ -1,6 +1,7 @@
 package com.example.todolist.fragments
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +27,7 @@ class FragmentSettings(
 ): Fragment() {
 
     private lateinit var spinner: Spinner
+    private lateinit var spinnerNotification: Spinner
     private lateinit var toggleButton: MaterialButtonToggleGroup
     private lateinit var saveChangesButton: ExtendedFloatingActionButton
     private lateinit var AllButton: Button
@@ -47,13 +49,31 @@ class FragmentSettings(
 
 
         spinner =  view.findViewById(R.id.spinner)
+        spinnerNotification =  view.findViewById(R.id.spinnerNotification)
         saveChangesButton = view.findViewById(R.id.saveChanges)
 
         val options = arrayOf("All", "In process", "Finished")
-
         val adapterSpinner = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, options)
         adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapterSpinner
+
+
+        val optionsNotifications = arrayOf("1 minute", "5 minutes", "10 minutes", "30 minutes")
+        val adapterNotificationsSpinner = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, optionsNotifications)
+        adapterNotificationsSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerNotification.adapter = adapterNotificationsSpinner
+
+        val prefs = requireContext().getSharedPreferences("com.example.todolist.preferences", Context.MODE_PRIVATE)
+        if (!prefs.contains("NotificationTime")) {
+            prefs.edit().putInt("NotificationTime", 1).apply()
+        }
+
+        val savedNotificationTime = prefs.getInt("NotificationTime", 1)
+        val spinnerPosition = optionsNotifications.indexOf("$savedNotificationTime minute${if (savedNotificationTime > 1) "s" else ""}")
+        if (spinnerPosition >= 0) {
+            spinnerNotification.setSelection(spinnerPosition)
+        }
+
 
 
         toggleButton = view.findViewById(R.id.toggleButton)
@@ -76,6 +96,19 @@ class FragmentSettings(
         }
 
         saveChangesButton.setOnClickListener {
+
+            val selectedNotificationTime = spinnerNotification.selectedItem.toString()
+            val notificationTimeInMinutes = when (selectedNotificationTime) {
+                "1 minute" -> 1
+                "5 minutes" -> 5
+                "10 minutes" -> 10
+                "30 minutes" -> 30
+                else -> 1
+            }
+            prefs.edit().putInt("NotificationTime", notificationTimeInMinutes).apply()
+
+
+
             val selectedStatus = spinner.selectedItem.toString()
             filterTasks(selectedCategory, selectedStatus)
             onCloseModal()
