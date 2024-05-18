@@ -1,7 +1,6 @@
 package com.example.todolist.fragments
 
 import android.annotation.SuppressLint
-import android.app.ActivityManager.TaskDescription
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,8 +15,8 @@ import com.bumptech.glide.Glide
 import com.example.todolist.MainActivity
 import com.example.todolist.R
 import com.example.todolist.database.TaskModel
-import com.example.todolist.database.TasksRepositoryImpl
 import com.example.todolist.viewModels.TasksViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -33,6 +32,7 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
     private lateinit var notificationSwitch: SwitchCompat
     private lateinit var taskAttachments: LinearLayout
     private lateinit var textVisibility: TextView
+    private lateinit var editTask: FloatingActionButton
 
 
     @SuppressLint("MissingInflatedId")
@@ -43,7 +43,7 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
     ): View? {
         val view = inflater.inflate(R.layout.fragment_details, container, false)
 
-
+        editTask = view.findViewById(R.id.editTask)
         taskAttachments = view.findViewById(R.id.taskAttachments)
         taskTitle = view.findViewById(R.id.titleTextView)
         taskDescription = view.findViewById(R.id.descriptionTextView)
@@ -66,7 +66,12 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
             completedImageView.setImageResource(R.drawable.ic_not_done)
         }
         notificationSwitch.isChecked = task.notificationEnabled == 1
-        println(task.completed)
+
+        editTask.setOnClickListener {
+            val dialog = EditTaskDialogFragment(task,tasksViewModel)
+            dialog.show(childFragmentManager, "EditTaskDialogFragment")
+        }
+
         displayAttachments()
 
         return view
