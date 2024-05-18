@@ -2,6 +2,8 @@ package com.example.todolist
 import DatabaseHandler
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -10,7 +12,9 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -26,6 +30,7 @@ import com.example.todolist.fragments.FragmentTaskDetails
 import com.example.todolist.viewModels.TasksViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.Calendar
+import android.Manifest
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,7 +43,15 @@ class MainActivity : AppCompatActivity() {
     lateinit var tasksViewModel: TasksViewModel
     lateinit var tasksRepositoryImpl: TasksRepositoryImpl
     lateinit var adapterRecycler: TasksAdapter
-
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // Permission is granted, proceed with accessing images
+        } else {
+            // Permission is denied, show a message to the user
+        }
+    }
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +63,8 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+
         settingsImageView = findViewById(R.id.settingsIcon)
         addTask = findViewById(R.id.addTask)
         searchButton = findViewById(R.id.searchButton)
@@ -158,10 +173,30 @@ class MainActivity : AppCompatActivity() {
             searchText.text.clear()
             showBottomSheet()
         }
+
+        if (!checkPermission()) {
+            requestPermission()
+        }
     }
     private fun showBottomSheet() {
         val bottomSheetFragment = ModalBottomSheet(tasksViewModel,recyclerTasks,adapterRecycler)
         bottomSheetFragment.show(supportFragmentManager, ModalBottomSheet.TAG)
+    }
+
+    private fun checkPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED
+        } else {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    private fun requestPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
     }
 
 }
