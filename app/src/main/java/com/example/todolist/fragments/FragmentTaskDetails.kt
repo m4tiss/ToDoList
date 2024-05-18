@@ -18,6 +18,9 @@ import com.example.todolist.R
 import com.example.todolist.database.TaskModel
 import com.example.todolist.database.TasksRepositoryImpl
 import com.example.todolist.viewModels.TasksViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class FragmentTaskDetails(private val task: TaskModel, private var tasksViewModel: TasksViewModel) : Fragment() {
 
@@ -55,8 +58,8 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
         taskTitle.text = task.title
         taskDescription.text = task.description
         taskCategory.text = task.category
-        creationTime.text = task.creationTime.toString()
-        executionTime.text = task.executionTime.toString()
+        creationTime.text = formatDate(task.creationTime)
+        executionTime.text = task.executionTime?.let { formatDate(it) } ?: "No execution time"
         if (task.completed == 1) {
             completedImageView.setImageResource(R.drawable.ic_done)
         } else {
@@ -79,6 +82,11 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
 //            }
 //        }
 
+    }
+
+    private fun formatDate(date: Date): String {
+        val sdf = SimpleDateFormat("HH:mm:ss dd-MM-yyyy", Locale.getDefault())
+        return sdf.format(date)
     }
     private fun displayAttachments() {
         val attachments = task.attachments

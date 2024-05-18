@@ -22,6 +22,8 @@ import com.example.todolist.database.TaskModel
 import com.example.todolist.viewModels.TasksViewModel
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.textfield.TextInputEditText
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 
 class FragmentAddTask(private var tasksViewModel: TasksViewModel): Fragment() {
@@ -119,7 +121,8 @@ class FragmentAddTask(private var tasksViewModel: TasksViewModel): Fragment() {
                     }
                     executionDate = calendar.time
 
-                    executionDateButton.text = executionDate.toString()
+
+                    executionDateButton.text = formatDate(executionDate)
                     Log.d("DateTime", "Selected date and time: $executionDate")
                 }
                 timePicker.show(childFragmentManager, "executionTime")
@@ -185,6 +188,12 @@ class FragmentAddTask(private var tasksViewModel: TasksViewModel): Fragment() {
         }
     }
 
+    private fun formatDate(date: Date?): String {
+        return date?.let {
+            val sdf = SimpleDateFormat("HH:mm:ss dd-MM-yyyy", Locale.getDefault())
+            sdf.format(it)
+        } ?: "No execution time"
+    }
     private fun removeImageView(imageView: ImageView, uri: Uri) {
         selectedAttachmentsLayout.removeView(imageView)
         selectedAttachments.remove(uri)
