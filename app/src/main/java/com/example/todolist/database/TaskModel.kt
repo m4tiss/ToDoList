@@ -14,6 +14,6 @@ data class TaskModel(
     val attachments: List<String>
 ) {
     fun hasAttachments(): Boolean {
-        return attachments.isNotEmpty()
+        return attachments.get(0) != ""
     }
 }

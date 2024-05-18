@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +24,7 @@ class TasksAdapter(private val context: Context,
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val taskTitleTextView: TextView = itemView.findViewById(R.id.taskTitle)
         val checkBox: CheckBox = itemView.findViewById(R.id.checkbox)
+        val attachmentIcon: ImageView = itemView.findViewById(R.id.attachmentIcon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
@@ -44,6 +46,13 @@ class TasksAdapter(private val context: Context,
         holder.itemView.setOnClickListener {
             val taskId = currentTask.id
             onTaskItemClick(taskId)
+        }
+
+        println(currentTask.hasAttachments())
+        if (currentTask.hasAttachments()) {
+            holder.attachmentIcon.visibility = View.VISIBLE
+        } else {
+            holder.attachmentIcon.visibility = View.GONE
         }
     }
 

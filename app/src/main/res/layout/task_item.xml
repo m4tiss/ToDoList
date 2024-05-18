@@ -21,4 +21,12 @@
         android:gravity="center"
         android:textSize="20sp"
         android:textColor="@color/white"/>
+    <ImageView
+        android:id="@+id/attachmentIcon"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:padding="20sp"
+        android:src="@drawable/ic_attachment"
+        android:visibility="gone"/>
 </LinearLayout>
