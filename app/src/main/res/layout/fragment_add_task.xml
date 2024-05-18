@@ -21,6 +21,7 @@
             android:layout_marginEnd="20dp">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/titleNewTask"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -36,10 +37,12 @@
             android:layout_marginEnd="20dp">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/descriptionNewTask"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -53,6 +56,56 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Set Execution Date" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/categoryNewTask"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_weight="2">
+
+                <Button
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:id="@+id/catSport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sport"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minHeight="50dp"
+                    android:tag="Sport"
+                    />
+                <Button
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:id="@+id/catFamily"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Family"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minHeight="50dp"
+                    android:tag="Family"
+                    />
+                <Button
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:id="@+id/catJob"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Job"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minHeight="50dp"
+                    android:tag="Job"
+                    />
+
+            </com.google.android.material.button.MaterialButtonToggleGroup>
 
         </LinearLayout>
 

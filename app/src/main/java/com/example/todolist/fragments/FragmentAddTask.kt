@@ -10,25 +10,38 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import java.util.Calendar
 import java.util.Date
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.SwitchCompat
 import com.bumptech.glide.Glide
+import com.example.todolist.database.TaskModel
+import com.example.todolist.viewModels.TasksViewModel
+import com.google.android.material.button.MaterialButtonToggleGroup
+import com.google.android.material.textfield.TextInputEditText
 
 
-class FragmentAddTask: Fragment() {
+class FragmentAddTask(private var tasksViewModel: TasksViewModel): Fragment() {
 
 
+    private lateinit var titleNewTask: TextInputEditText
+    private lateinit var descriptionNewTask: TextInputEditText
     private lateinit var executionDateButton : Button
     private lateinit var addAttachments : ImageView
     private lateinit var addTaskButton : Button
-    private lateinit var executionDate : Date
+    private lateinit var addNotificationSwitch: SwitchCompat
+    private var executionDate: Date? = null
     private lateinit var selectedAttachmentsLayout: LinearLayout
+    private lateinit var categoryNewTask: MaterialButtonToggleGroup
+    private lateinit var catSport: Button
+    private lateinit var catFamily: Button
+    private lateinit var catJob: Button
     private val selectedAttachments = mutableListOf<Uri>()
+    private var isProgrammaticChangeCategory = false
+    var selectedCategory = "Family"
 
     private val openDocumentLauncher = registerForActivityResult(
         ActivityResultContracts.OpenDocument()
@@ -51,11 +64,32 @@ class FragmentAddTask: Fragment() {
         linearLayout.setOnClickListener {
 
         }
-
+        titleNewTask = view.findViewById(R.id.titleNewTask)
+        descriptionNewTask = view.findViewById(R.id.descriptionNewTask)
         executionDateButton = view.findViewById(R.id.executionDateButton)
+        categoryNewTask = view.findViewById(R.id.categoryNewTask)
+        catSport = view.findViewById(R.id.catSport)
+        catFamily = view.findViewById(R.id.catFamily)
+        catJob = view.findViewById(R.id.catJob)
+        addNotificationSwitch = view.findViewById(R.id.addNotificationSwitch)
         addAttachments = view.findViewById(R.id.addAttachments)
         addTaskButton = view.findViewById(R.id.addTaskButton)
         selectedAttachmentsLayout = view.findViewById(R.id.selectedAttachmentsLayout)
+
+
+
+        categoryNewTask.check(catFamily.id)
+
+        categoryNewTask.addOnButtonCheckedListener { group, selectedId, isSelected ->
+            if (!isProgrammaticChangeCategory && isSelected) {
+                isProgrammaticChangeCategory = true
+                val checkedButton = group.findViewById<Button>(selectedId)
+                selectedCategory = checkedButton.tag as? String ?: "Family"
+                categoryNewTask.clearChecked()
+                categoryNewTask.check(selectedId)
+                isProgrammaticChangeCategory = false
+            }
+        }
 
         executionDateButton.setOnClickListener {
 
@@ -97,6 +131,34 @@ class FragmentAddTask: Fragment() {
         }
 
         addTaskButton.setOnClickListener {
+
+            val title = titleNewTask.text.toString()
+            val description = descriptionNewTask.text.toString()
+            val notificationEnabled = addNotificationSwitch.isChecked
+
+
+            val attachmentsList = if (selectedAttachments.isNotEmpty()) {
+                selectedAttachments.map { it.toString() }
+            } else {
+                emptyList()
+            }
+
+            val currentTime = Calendar.getInstance().time
+
+             val newTask = TaskModel(
+                id = 1,
+                title = title,
+                description = description,
+                creationTime = currentTime,
+                executionTime = executionDate.takeIf { it != null },
+                completed = 0,
+                notificationEnabled = if (notificationEnabled) 1 else 0,
+                category = selectedCategory,
+                attachments = attachmentsList
+            )
+            tasksViewModel.addTask(newTask)
+
+
         parentFragmentManager.popBackStack()
         }
 

@@ -11,20 +11,9 @@ data class TaskModel(
     val completed: Int,
     val notificationEnabled: Int,
     val category: String,
-    val attachments: List<Attachment>
+    val attachments: List<String>
 ) {
     fun hasAttachments(): Boolean {
         return attachments.isNotEmpty()
     }
 }
-
-data class Attachment(
-    val type: AttachmentType,
-    val path: String
-)
-
-enum class AttachmentType {
-    IMAGE,
-    FILE
-}
-

@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
 //                attachments = emptyList()
 //            )
 //            tasksViewModel.addTask(exampleTask)
-            val fragment = FragmentAddTask()
+            val fragment = FragmentAddTask(tasksViewModel)
             supportFragmentManager.beginTransaction()
                 .setCustomAnimations(
                     androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom,

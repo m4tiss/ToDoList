@@ -3,8 +3,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.todolist.database.Attachment
-import com.example.todolist.database.AttachmentType
 import com.example.todolist.database.TaskModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -146,21 +144,11 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         return format.parse(dateString) ?: Date()
     }
 
-    private fun serializeAttachments(attachments: List<Attachment>): String {
-        return attachments.joinToString(";") { "${it.type.name}:${it.path}" }
+    private fun serializeAttachments(attachments: List<String>): String {
+        return attachments.joinToString(";")
     }
 
-    private fun deserializeAttachments(serialized: String): List<Attachment> {
-        val attachments = mutableListOf<Attachment>()
-        val parts = serialized.split(";")
-        parts.forEach {
-            val attachmentParts = it.split(":")
-            if (attachmentParts.size == 2) {
-                val type = AttachmentType.valueOf(attachmentParts[0])
-                val path = attachmentParts[1]
-                attachments.add(Attachment(type, path))
-            }
-        }
-        return attachments
+    private fun deserializeAttachments(serialized: String): List<String> {
+        return serialized.split(";")
     }
 }
