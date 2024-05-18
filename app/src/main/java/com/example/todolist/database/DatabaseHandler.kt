@@ -133,6 +133,28 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         return taskList
     }
 
+    fun updateTask(task: TaskModel): Int {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(KEY_TITLE, task.title)
+            put(KEY_DESCRIPTION, task.description)
+            put(KEY_CREATION_TIME, formatDate(task.creationTime))
+            put(KEY_EXECUTION_TIME, task.executionTime?.let { formatDate(it) })
+            put(KEY_COMPLETED, task.completed)
+            put(KEY_NOTIFICATION_ENABLED, task.notificationEnabled)
+            put(KEY_CATEGORY, task.category)
+            put(KEY_ATTACHMENTS, serializeAttachments(task.attachments))
+        }
+
+        val selection = "$KEY_ID = ?"
+        val selectionArgs = arrayOf(task.id.toString())
+
+        val updatedRows = db.update(TABLE_NAME, values, selection, selectionArgs)
+        db.close()
+        return updatedRows
+    }
+
+
 
     private fun formatDate(date: Date): String {
         val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())

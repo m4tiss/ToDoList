@@ -68,7 +68,7 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
         notificationSwitch.isChecked = task.notificationEnabled == 1
 
         editTask.setOnClickListener {
-            val dialog = EditTaskDialogFragment(task,tasksViewModel)
+            val dialog = EditTaskDialogFragment(task,tasksViewModel,::onCloseFragment)
             dialog.show(childFragmentManager, "EditTaskDialogFragment")
         }
 
@@ -114,6 +114,10 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
                 taskAttachments.addView(imageView)
             }
         }
+    }
+
+    fun onCloseFragment() {
+        parentFragmentManager.popBackStack()
     }
 
     override fun onDestroyView() {

@@ -14,7 +14,9 @@ class TasksRepositoryImpl(private val databaseHandler: DatabaseHandler) : TasksR
     override fun deleteTask(task: TaskModel) {
         databaseHandler.deleteTask(task.id)
     }
-
+    override fun updateTask(task: TaskModel) {
+        databaseHandler.updateTask(task)
+    }
     override fun updateStatusTask(taskId:Int,newStatus:Int){
         databaseHandler.updateStatus(taskId, newStatus)
     }

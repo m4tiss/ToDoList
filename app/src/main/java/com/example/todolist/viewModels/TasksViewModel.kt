@@ -47,5 +47,18 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
         _tasksData.value = currentTasks
     }
 
+    fun updateTask(task: TaskModel) {
+        repository.updateTask(task)
+        val currentTasks = _tasksData.value ?: return
+        val updatedTasks = currentTasks.map {
+            if (it.id == task.id) {
+                task
+            } else {
+                it
+            }
+        }
+        _tasksData.value = updatedTasks
+    }
+
 
 }
