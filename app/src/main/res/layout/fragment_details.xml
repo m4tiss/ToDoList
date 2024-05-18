@@ -18,7 +18,7 @@
             android:background="@drawable/title_description_panel">
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="60sp"
                 android:text="Title"
                 android:textColor="@color/white"
                 android:textSize="20sp"
@@ -28,7 +28,7 @@
             <TextView
                 android:id="@+id/titleTextView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="60sp"
                 android:text="Zrobić ładny layout"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
@@ -38,7 +38,7 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="60sp"
                 android:gravity="center_vertical"
                 android:paddingStart="20dp"
                 android:text="Description"
@@ -47,7 +47,7 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="200sp"
                 android:id="@+id/descriptionTextView"
                 android:text="Projektowanie układu to kluczowy krok w tworzeniu aplikacji mobilnych, który zapewnia użyteczność i estetykę. Odpowiednio zaplanowany layout umożliwia wygodne korzystanie z aplikacji przez użytkowników."
                 android:paddingStart="20dp"
@@ -63,7 +63,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center">
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -91,7 +92,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center">
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -119,7 +121,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center">
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -156,7 +159,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center">
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -178,7 +182,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center">
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -206,6 +211,17 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/textVisibility"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Attachments"
+            android:layout_marginTop="15sp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:visibility="gone"/>
         <LinearLayout
             android:id="@+id/taskAttachments"
             android:layout_width="match_parent"

@@ -29,6 +29,8 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
     private lateinit var completedImageView: ImageView
     private lateinit var notificationSwitch: SwitchCompat
     private lateinit var taskAttachments: LinearLayout
+    private lateinit var textVisibility: TextView
+
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
@@ -47,6 +49,7 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
         completedImageView = view.findViewById(R.id.completedImageView)
         taskCategory = view.findViewById(R.id.categoryTextView)
         notificationSwitch = view.findViewById(R.id.notificationSwitch)
+        textVisibility = view.findViewById(R.id.textVisibility)
 
 
         taskTitle.text = task.title
@@ -80,7 +83,8 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
     private fun displayAttachments() {
         val attachments = task.attachments
 
-        if (attachments.isNotEmpty()) {
+        if (attachments.get(0) != "") {
+            textVisibility.visibility = View.VISIBLE
             for (attachment in attachments) {
                 val imageView = ImageView(context)
                 val layoutParams = LinearLayout.LayoutParams(
