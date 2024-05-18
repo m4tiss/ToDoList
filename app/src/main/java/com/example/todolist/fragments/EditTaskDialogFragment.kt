@@ -143,12 +143,16 @@ class EditTaskDialogFragment(
                 val title = taskTitle.text.toString()
                 val description = taskDescription.text.toString()
 
+                val updatedAttachments = selectedAttachments.map { uri ->
+                    removeLeadingSemicolon(uri.toString())
+                }
+
                 val updatedTask = task.copy(
                     title = title,
                     description = description,
                     executionTime = executionDate.takeIf { it != null },
                     category = selectedCategory,
-                    attachments = selectedAttachments.map { it.toString() }
+                    attachments = updatedAttachments
                 )
 
                 tasksViewModel.updateTask(updatedTask)
@@ -193,4 +197,13 @@ class EditTaskDialogFragment(
         taskAttachments.removeView(imageView)
         selectedAttachments.remove(uri)
     }
+
+    private fun removeLeadingSemicolon(uriString: String): String {
+        return if (uriString.startsWith(";")) {
+            uriString.substring(1)
+        } else {
+            uriString
+        }
+    }
+
 }
