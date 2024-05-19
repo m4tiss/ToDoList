@@ -160,6 +160,7 @@ class FragmentAddTask(private var tasksViewModel: TasksViewModel): Fragment() {
                 attachments = attachmentsList
             )
             tasksViewModel.addTask(newTask)
+            NotificationUtils.setNotification(requireContext(), newTask)
 
 
         parentFragmentManager.popBackStack()

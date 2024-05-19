@@ -31,6 +31,9 @@ import com.example.todolist.viewModels.TasksViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.Calendar
 import android.Manifest
+import android.content.Intent
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 
 class MainActivity : AppCompatActivity() {
 
@@ -50,6 +53,7 @@ class MainActivity : AppCompatActivity() {
             // Permission is granted, proceed with accessing images
         } else {
             // Permission is denied, show a message to the user
+            Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -63,6 +67,10 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        showNotificationPermissionDialog()
+
+        NotificationUtils.createNotificationChannel(this)
+
 
 
         settingsImageView = findViewById(R.id.settingsIcon)
@@ -82,7 +90,7 @@ class MainActivity : AppCompatActivity() {
 
         databaseHandler = DatabaseHandler(this)
         tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
-        tasksViewModel = TasksViewModel(tasksRepositoryImpl)
+        tasksViewModel = TasksViewModel(this,tasksRepositoryImpl)
 
         addTask.setOnClickListener {
             val fragment = FragmentAddTask(tasksViewModel)
@@ -180,6 +188,30 @@ class MainActivity : AppCompatActivity() {
         } else {
             requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
+    }
+    private fun showNotificationPermissionDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Enable Notifications")
+            .setMessage("Do you want to enable notifications for this app?")
+            .setPositiveButton("Yes") { dialog, _ ->
+                navigateToNotificationSettings()
+                dialog.dismiss()
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+    }
+
+    private fun navigateToNotificationSettings() {
+        val intent = Intent().apply {
+            action = "android.settings.APP_NOTIFICATION_SETTINGS"
+            putExtra("app_package", packageName)
+            putExtra("app_uid", applicationInfo.uid)
+            putExtra("android.provider.extra.APP_PACKAGE", packageName)
+        }
+        startActivity(intent)
     }
 
 }
