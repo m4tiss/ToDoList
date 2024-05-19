@@ -1,6 +1,7 @@
 package com.example.todolist
 
 import android.annotation.SuppressLint
+import android.app.ActivityManager.TaskDescription
 import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -15,8 +16,8 @@ import com.example.todolist.database.TaskModel
 
 object NotificationUtils {
 
-    private const val CHANNEL_ID = "TaskNotificationChannel"
-    private const val CHANNEL_NAME = "Task Notifications"
+    private const val CHANNEL_ID = "ToDoAppNotificationChannel"
+    private const val CHANNEL_NAME = "To Do Notifications"
     private const val NOTIFICATION_ID = 123
     private const val TAG = "NotificationUtils"
 
@@ -39,7 +40,7 @@ object NotificationUtils {
 
             val alarmIntent = Intent(context, AlarmReceiver::class.java).apply {
                 putExtra("task_title", task.title)
-                putExtra("task_id", task.id)
+                putExtra("task_description", task.description)
             }
 
             val pendingIntent = PendingIntent.getBroadcast(
@@ -49,45 +50,30 @@ object NotificationUtils {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
+            val notificationTime = getNotificationTime(context)
+
             val executionTime = task.executionTime.time
-            val notifyTime = executionTime - 1 * 60 * 1000 // 1 minute before execution time
-
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, notifyTime, pendingIntent)
-        }
-    }
-
-
-        fun cancelNotification(context: Context, taskId: Int) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val alarmIntent = Intent(context, AlarmReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            taskId,
-            alarmIntent,
-            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-        )
-        pendingIntent?.let {
-            alarmManager.cancel(it)
-            it.cancel()
+            val notifyTime = executionTime - notificationTime
+            if(notifyTime > 0) alarmManager.setExact(AlarmManager.RTC_WAKEUP, notifyTime, pendingIntent)
         }
     }
 
     private fun getNotificationTime(context: Context): Long {
         val prefs = context.getSharedPreferences("com.example.todolist.preferences", Context.MODE_PRIVATE)
         val notificationTime = prefs.getInt("NotificationTime", 1)
-        // Convert notification time to milliseconds as needed
-        return notificationTime * 60 * 1000L  // NotificationTime is in minutes, convert to milliseconds
+        return notificationTime * 60 * 1000L
     }
 
     class AlarmReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             context?.let {
                 val taskTitle = intent?.getStringExtra("task_title")
-                showNotification(it, taskTitle ?: "Task Notification")
+                val taskDescription  = intent?.getStringExtra("task_description")
+                showNotification(it, taskTitle ?: "Task Title",taskDescription?: "Task Description")
             }
         }
 
-        private fun showNotification(context: Context, taskTitle: String) {
+        private fun showNotification(context: Context, taskTitle: String,taskDescription: String) {
             val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -100,12 +86,11 @@ object NotificationUtils {
             )
 
             val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-                .setContentTitle("Task Reminder")
-                .setContentText(taskTitle)
+                .setContentTitle(taskTitle)
+                .setContentText(taskDescription)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
-
             notificationManager.notify(NOTIFICATION_ID, builder.build())
         }
     }

@@ -7,7 +7,7 @@ import com.example.todolist.NotificationUtils
 import com.example.todolist.database.TaskModel
 import com.example.todolist.database.TasksRepository
 
-class TasksViewModel(private val context: Context,private val repository: TasksRepository) : ViewModel() {
+class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
     private val _tasksData = MutableLiveData<List<TaskModel>>()
     val tasksData: MutableLiveData<List<TaskModel>>
         get() = _tasksData
@@ -20,15 +20,9 @@ class TasksViewModel(private val context: Context,private val repository: TasksR
     private fun fetchTasksFromDatabase() {
         val tasksFromDatabase = repository.getAllTasks()
         _tasksData.value = tasksFromDatabase
-        tasksFromDatabase.forEach { task ->
-            if (task.notificationEnabled == 1) {
-                NotificationUtils.setNotification(context, task)
-            }
-        }
     }
 
     fun addTask(task: TaskModel) {
-
         val newRowId = repository.insertTask(task)
         val insertedTask = task.copy(id = newRowId)
         val currentTasks = _tasksData.value ?: emptyList()

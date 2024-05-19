@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
 
         databaseHandler = DatabaseHandler(this)
         tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
-        tasksViewModel = TasksViewModel(this,tasksRepositoryImpl)
+        tasksViewModel = TasksViewModel(tasksRepositoryImpl)
 
         addTask.setOnClickListener {
             val fragment = FragmentAddTask(tasksViewModel)
