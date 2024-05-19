@@ -21,9 +21,12 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
     }
 
     fun addTask(task: TaskModel) {
-        repository.insertTask(task)
+
+        val newRowId = repository.insertTask(task)
+        val insertedTask = task.copy(id = newRowId)
         val currentTasks = _tasksData.value ?: emptyList()
-        _tasksData.value = currentTasks + task
+        _tasksData.value = currentTasks + insertedTask
+
     }
 
     fun updateStatus(taskId: Int, newStatus: Int) {
@@ -45,6 +48,7 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
         val currentTasks = _tasksData.value?.toMutableList() ?: mutableListOf()
         currentTasks.remove(taskToDelete)
         _tasksData.value = currentTasks
+
     }
 
     fun updateTask(task: TaskModel) {

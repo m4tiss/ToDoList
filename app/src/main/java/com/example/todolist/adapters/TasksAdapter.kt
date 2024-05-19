@@ -17,7 +17,6 @@ import com.example.todolist.viewModels.TasksViewModel
 class TasksAdapter(private val context: Context,
                    private var taskList: List<TaskModel>,
                    private val tasksViewModel: TasksViewModel,
-                   private val onDeleteTask: (taskId: Int) -> Unit,
                     private val onTaskItemClick: (Int) -> Unit):
     RecyclerView.Adapter<TasksAdapter.TaskViewHolder>() {
 
@@ -61,10 +60,11 @@ class TasksAdapter(private val context: Context,
     }
 
     fun deleteTask(position: Int) {
-        val task = taskList[position]
-        onDeleteTask(task.id)
-        taskList = taskList.filterIndexed { index, _ -> index != position }
-        notifyItemRemoved(position)
+        if (position >= 0 && position < taskList.size) {
+            val task = taskList[position]
+            tasksViewModel.deleteTask(task.id)
+            notifyItemRemoved(position)
+        }
     }
 
     private fun showDeleteConfirmationDialog(position: Int) {
@@ -76,11 +76,9 @@ class TasksAdapter(private val context: Context,
             dialog.dismiss()
         }
         builder.setNegativeButton("No") { dialog, _ ->
-            notifyDataSetChanged()
             dialog.dismiss()
         }
         builder.setOnCancelListener {
-            notifyDataSetChanged()
         }
         val dialog = builder.create()
         dialog.show()
@@ -110,4 +108,5 @@ class TasksAdapter(private val context: Context,
         taskList = newTaskList
         notifyDataSetChanged()
     }
+
 }

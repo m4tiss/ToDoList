@@ -39,7 +39,6 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
                 "$KEY_ATTACHMENTS TEXT" +
                 ")"
         db?.execSQL(createTableQuery)
-        println("po bazie")
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -47,8 +46,7 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         onCreate(db)
     }
 
-    fun addTask(task: TaskModel) {
-        println("przed dodaniem")
+    fun addTask(task: TaskModel): Int {
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(KEY_TITLE, task.title)
@@ -59,9 +57,9 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         values.put(KEY_NOTIFICATION_ENABLED,task.notificationEnabled)
         values.put(KEY_CATEGORY, task.category)
         values.put(KEY_ATTACHMENTS, serializeAttachments(task.attachments))
-        db.insert(TABLE_NAME, null, values)
+        val newRowId = db.insert(TABLE_NAME, null, values)
         db.close()
-        println("po dodaniu")
+        return newRowId.toInt()
     }
 
     fun deleteTask(taskId: Int): Int {

@@ -84,22 +84,7 @@ class MainActivity : AppCompatActivity() {
         tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
         tasksViewModel = TasksViewModel(tasksRepositoryImpl)
 
-
-        val currentTime = Calendar.getInstance().time
-
         addTask.setOnClickListener {
-//            val exampleTask = TaskModel(
-//                id = 1,
-//                title = "Mniej pline",
-//                description = "Mniej pline Mniej pline Mniej pline Mniej pline",
-//                creationTime = currentTime,
-//                executionTime = currentTime,
-//                completed = 0,
-//                notificationEnabled = 1,
-//                category = "Job",
-//                attachments = emptyList()
-//            )
-//            tasksViewModel.addTask(exampleTask)
             val fragment = FragmentAddTask(tasksViewModel)
             supportFragmentManager.beginTransaction()
                 .setCustomAnimations(
@@ -135,9 +120,6 @@ class MainActivity : AppCompatActivity() {
         adapterRecycler = TasksAdapter(
             this,
             tasksViewModel.tasksData.value ?: listOf(),
-            onDeleteTask = { taskId ->
-                tasksViewModel.deleteTask(taskId)
-            },
             tasksViewModel = tasksViewModel,
             onTaskItemClick = { taskId ->
                 val task = tasksViewModel.tasksData.value?.find { it.id == taskId }
@@ -164,6 +146,7 @@ class MainActivity : AppCompatActivity() {
                 adapterRecycler.notifyDataSetChanged()
             }
         }
+
 
 
         recyclerTasks.adapter = adapterRecycler

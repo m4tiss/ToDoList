@@ -7,8 +7,8 @@ class TasksRepositoryImpl(private val databaseHandler: DatabaseHandler) : TasksR
         return databaseHandler.getAllTasks().filterNotNull()
     }
 
-    override fun insertTask(task: TaskModel) {
-        databaseHandler.addTask(task)
+    override fun insertTask(task: TaskModel): Int {
+        return databaseHandler.addTask(task)
     }
 
     override fun deleteTask(task: TaskModel) {
