@@ -146,6 +146,8 @@ class FragmentAddTask(private var tasksViewModel: TasksViewModel): Fragment() {
                 emptyList()
             }
 
+            println( "Lista:" +attachmentsList)
+
             val currentTime = Calendar.getInstance().time
 
              val newTask = TaskModel(

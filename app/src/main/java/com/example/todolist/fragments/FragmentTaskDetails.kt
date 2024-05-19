@@ -91,7 +91,7 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
     private fun displayAttachments() {
         val attachments = task.attachments
 
-        if (attachments.get(0) != "") {
+        if (attachments.isNotEmpty() && attachments.get(0) != "") {
             textVisibility.visibility = View.VISIBLE
             for (attachment in attachments) {
                 val imageView = ImageView(context)
@@ -105,7 +105,6 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
                 Glide.with(this)
                     .load(Uri.parse(attachment))
                     .into(imageView)
-
                 taskAttachments.addView(imageView)
             }
         }

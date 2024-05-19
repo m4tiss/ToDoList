@@ -57,7 +57,8 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         values.put(KEY_COMPLETED, task.completed)
         values.put(KEY_NOTIFICATION_ENABLED,task.notificationEnabled)
         values.put(KEY_CATEGORY, task.category)
-        values.put(KEY_ATTACHMENTS, serializeAttachments(task.attachments))
+        if(task.attachments.isNotEmpty())values.put(KEY_ATTACHMENTS, serializeAttachments(task.attachments))
+        else values.put(KEY_ATTACHMENTS, "")
         val newRowId = db.insert(TABLE_NAME, null, values)
         db.close()
         return newRowId.toInt()
@@ -110,7 +111,6 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         if (cursor.moveToFirst()) {
             println("czytamy")
             do {
-                // Sprawdzenie, czy pola nie są puste
                 val id = cursor.getInt(cursor.getColumnIndex(KEY_ID))
                 val title = cursor.getString(cursor.getColumnIndex(KEY_TITLE))
                 val description = cursor.getString(cursor.getColumnIndex(KEY_DESCRIPTION))
@@ -156,7 +156,8 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
             put(KEY_COMPLETED, task.completed)
             put(KEY_NOTIFICATION_ENABLED, task.notificationEnabled)
             put(KEY_CATEGORY, task.category)
-            put(KEY_ATTACHMENTS, serializeAttachments(task.attachments))
+            if(task.attachments.isNotEmpty())put(KEY_ATTACHMENTS, serializeAttachments(task.attachments))
+            else put(KEY_ATTACHMENTS, "")
         }
 
         val selection = "$KEY_ID = ?"
