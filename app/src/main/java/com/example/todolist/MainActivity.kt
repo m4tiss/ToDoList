@@ -31,9 +31,11 @@ import com.example.todolist.viewModels.TasksViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.Calendar
 import android.Manifest
+import android.app.NotificationManager
 import android.content.Intent
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.NotificationManagerCompat
 
 class MainActivity : AppCompatActivity() {
 
@@ -67,7 +69,6 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        showNotificationPermissionDialog()
 
         NotificationUtils.createNotificationChannel(this)
 
@@ -168,6 +169,10 @@ class MainActivity : AppCompatActivity() {
         if (!checkPermission()) {
             requestPermission()
         }
+
+        if (!checkNotificationPermission()) {
+            showNotificationPermissionDialog()
+        }
     }
     private fun showBottomSheet() {
         val bottomSheetFragment = ModalBottomSheet(tasksViewModel,recyclerTasks,adapterRecycler)
@@ -202,6 +207,15 @@ class MainActivity : AppCompatActivity() {
             }
             .create()
             .show()
+    }
+
+    private fun checkNotificationPermission(): Boolean {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationManager.areNotificationsEnabled()
+        } else {
+            NotificationManagerCompat.from(this).areNotificationsEnabled()
+        }
     }
 
     private fun navigateToNotificationSettings() {
