@@ -9,7 +9,7 @@ data class TaskModel(
     val creationTime: Date,
     val executionTime: Date?,
     val completed: Int,
-    val notificationEnabled: Int,
+    var notificationEnabled: Int,
     val category: String,
     val attachments: List<String>
 ) {

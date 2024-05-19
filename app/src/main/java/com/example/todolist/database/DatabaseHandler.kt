@@ -1,4 +1,5 @@
 import android.annotation.SuppressLint
+import android.app.Notification
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -77,6 +78,20 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         values.put(KEY_COMPLETED, newStatus)
 
         println("zmieniam na: " + newStatus)
+        val selection = "$KEY_ID = ?"
+        val selectionArgs = arrayOf(taskId.toString())
+
+        val updatedRows = db.update(TABLE_NAME, values, selection, selectionArgs)
+        db.close()
+        return updatedRows
+    }
+
+    fun updateNotification(taskId: Int, newNotification: Int): Int {
+        val db = writableDatabase
+        val values = ContentValues()
+        values.put(KEY_NOTIFICATION_ENABLED, newNotification)
+
+        println("zmieniam na: " + newNotification)
         val selection = "$KEY_ID = ?"
         val selectionArgs = arrayOf(taskId.toString())
 

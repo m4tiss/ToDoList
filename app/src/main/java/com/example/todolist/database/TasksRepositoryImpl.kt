@@ -20,4 +20,8 @@ class TasksRepositoryImpl(private val databaseHandler: DatabaseHandler) : TasksR
     override fun updateStatusTask(taskId:Int,newStatus:Int){
         databaseHandler.updateStatus(taskId, newStatus)
     }
+
+    override fun updateNotificationTask(taskId:Int,newNotification:Int){
+        databaseHandler.updateNotification(taskId, newNotification)
+    }
 }

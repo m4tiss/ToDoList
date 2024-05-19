@@ -71,22 +71,17 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
             val dialog = EditTaskDialogFragment(task,tasksViewModel,::onCloseFragment)
             dialog.show(childFragmentManager, "EditTaskDialogFragment")
         }
+        notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
+            val newNotification = if (isChecked) 1 else 0
+            if (isChecked != (task.notificationEnabled == 1)) {
+                task.notificationEnabled = newNotification
+                tasksViewModel.updateNotification(task.id, newNotification)
+            }
+        }
 
         displayAttachments()
 
         return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-//        completedSwitch.setOnCheckedChangeListener { _, isChecked ->
-//            if (isChecked != (task.completed == 1)) {
-//                val newStatus = if (isChecked) 1 else 0
-//                tasksViewModel.updateStatus(task.id, newStatus)
-//            }
-//        }
-
     }
 
     private fun formatDate(date: Date): String {

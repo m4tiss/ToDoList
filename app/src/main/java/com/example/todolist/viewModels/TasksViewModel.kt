@@ -42,6 +42,19 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
         _tasksData.value = updatedTasks
     }
 
+    fun updateNotification(taskId: Int, newNotification: Int) {
+        repository.updateNotificationTask(taskId, newNotification)
+        val currentTasks = _tasksData.value ?: return
+        val updatedTasks = currentTasks.map {
+            if (it.id == taskId) {
+                it.copy(notificationEnabled = newNotification)
+            } else {
+                it
+            }
+        }
+        _tasksData.value = updatedTasks
+    }
+
     fun deleteTask(taskId: Int) {
         val taskToDelete = tasksData.value?.firstOrNull { it.id == taskId } ?: return
         repository.deleteTask(taskToDelete)
@@ -63,6 +76,7 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
         }
         _tasksData.value = updatedTasks
     }
+
 
 
 }

@@ -7,4 +7,5 @@ interface TasksRepository {
     fun deleteTask(task: TaskModel)
     fun updateTask(task: TaskModel)
     fun updateStatusTask(taskId:Int,newStatus:Int)
+    fun updateNotificationTask(taskId:Int,newNotification:Int)
 }
