@@ -22,12 +22,12 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
         _tasksData.value = tasksFromDatabase
     }
 
-    fun addTask(task: TaskModel) {
+    fun addTask(task: TaskModel):TaskModel {
         val newRowId = repository.insertTask(task)
         val insertedTask = task.copy(id = newRowId)
         val currentTasks = _tasksData.value ?: emptyList()
         _tasksData.value = currentTasks + insertedTask
-
+        return insertedTask
     }
 
     fun updateStatus(taskId: Int, newStatus: Int) {

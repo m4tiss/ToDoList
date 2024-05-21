@@ -39,6 +39,7 @@ object NotificationUtils {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
             val alarmIntent = Intent(context, AlarmReceiver::class.java).apply {
+                putExtra("task_id", task.id)
                 putExtra("task_title", task.title)
                 putExtra("task_description", task.description)
             }
@@ -67,13 +68,14 @@ object NotificationUtils {
     class AlarmReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             context?.let {
+                val taskId = intent?.getIntExtra("task_id", 0) ?: 0
                 val taskTitle = intent?.getStringExtra("task_title")
                 val taskDescription  = intent?.getStringExtra("task_description")
-                showNotification(it, taskTitle ?: "Task Title",taskDescription?: "Task Description")
+                showNotification(it, taskId, taskTitle ?: "Task Title", taskDescription ?: "Task Description")
             }
         }
 
-        private fun showNotification(context: Context, taskTitle: String,taskDescription: String) {
+        private fun showNotification(context: Context, taskId: Int, taskTitle: String, taskDescription: String) {
             val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -91,7 +93,7 @@ object NotificationUtils {
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
-            notificationManager.notify(NOTIFICATION_ID, builder.build())
+            notificationManager.notify(taskId, builder.build())
         }
     }
 }

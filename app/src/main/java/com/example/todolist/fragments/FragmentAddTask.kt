@@ -161,8 +161,8 @@ class FragmentAddTask(private var tasksViewModel: TasksViewModel): Fragment() {
                 category = selectedCategory,
                 attachments = attachmentsList
             )
-            tasksViewModel.addTask(newTask)
-            NotificationUtils.setNotification(requireContext(), newTask)
+            val insertedTask = tasksViewModel.addTask(newTask)
+            NotificationUtils.setNotification(requireContext(), insertedTask)
 
 
         parentFragmentManager.popBackStack()

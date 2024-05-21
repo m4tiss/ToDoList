@@ -52,9 +52,7 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            // Permission is granted, proceed with accessing images
         } else {
-            // Permission is denied, show a message to the user
             Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
         }
     }
