@@ -36,6 +36,7 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationManagerCompat
+import com.example.todolist.viewModels.TasksViewModelFactory
 
 class MainActivity : AppCompatActivity() {
 
@@ -89,10 +90,13 @@ class MainActivity : AppCompatActivity() {
 
         databaseHandler = DatabaseHandler(this)
         tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
-        tasksViewModel = TasksViewModel(tasksRepositoryImpl)
+
+        val factory = TasksViewModelFactory(tasksRepositoryImpl)
+        tasksViewModel = ViewModelProvider(this, factory).get(TasksViewModel::class.java)
+
 
         addTask.setOnClickListener {
-            val fragment = FragmentAddTask(tasksViewModel)
+            val fragment = FragmentAddTask()
             supportFragmentManager.beginTransaction()
                 .setCustomAnimations(
                     androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom,
@@ -148,10 +152,8 @@ class MainActivity : AppCompatActivity() {
         )
 
         tasksViewModel.tasksData.observe(this) { tasks ->
-            if (!recyclerTasks.isComputingLayout && !recyclerTasks.isAnimating) {
                 adapterRecycler.setData(tasks)
                 adapterRecycler.notifyDataSetChanged()
-            }
         }
 
 

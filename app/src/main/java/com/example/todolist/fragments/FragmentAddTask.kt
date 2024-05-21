@@ -1,5 +1,6 @@
 package com.example.todolist
 
+import DatabaseHandler
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
@@ -17,17 +18,25 @@ import java.util.Calendar
 import java.util.Date
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SwitchCompat
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.todolist.database.TaskModel
+import com.example.todolist.database.TasksRepositoryImpl
 import com.example.todolist.viewModels.TasksViewModel
+import com.example.todolist.viewModels.TasksViewModelFactory
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.textfield.TextInputEditText
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 
-class FragmentAddTask(private var tasksViewModel: TasksViewModel): Fragment() {
+class FragmentAddTask: Fragment() {
 
+
+
+    lateinit var databaseHandler: DatabaseHandler
+    lateinit var tasksViewModel: TasksViewModel
+    lateinit var tasksRepositoryImpl: TasksRepositoryImpl
 
     private lateinit var titleNewTask: TextInputEditText
     private lateinit var descriptionNewTask: TextInputEditText
@@ -78,6 +87,11 @@ class FragmentAddTask(private var tasksViewModel: TasksViewModel): Fragment() {
         addTaskButton = view.findViewById(R.id.addTaskButton)
         selectedAttachmentsLayout = view.findViewById(R.id.selectedAttachmentsLayout)
 
+
+        databaseHandler = DatabaseHandler(requireContext())
+        tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
+        val factory = TasksViewModelFactory(tasksRepositoryImpl)
+        tasksViewModel = ViewModelProvider(requireActivity(), factory).get(TasksViewModel::class.java)
 
 
         categoryNewTask.check(catFamily.id)
