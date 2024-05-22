@@ -63,6 +63,11 @@ class FragmentAddTask: Fragment() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelableArrayList("selected_attachments", ArrayList(selectedAttachments))
+    }
+
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -87,6 +92,14 @@ class FragmentAddTask: Fragment() {
         addTaskButton = view.findViewById(R.id.addTaskButton)
         selectedAttachmentsLayout = view.findViewById(R.id.selectedAttachmentsLayout)
 
+
+        if (savedInstanceState != null) {
+            val savedAttachments = savedInstanceState.getParcelableArrayList<Uri>("selected_attachments")
+            if (savedAttachments != null) {
+                selectedAttachments.addAll(savedAttachments)
+                selectedAttachments.forEach { addImageView(it) }
+            }
+        }
 
         databaseHandler = DatabaseHandler(requireContext())
         tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
