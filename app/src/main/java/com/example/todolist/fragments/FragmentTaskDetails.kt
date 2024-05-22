@@ -1,5 +1,6 @@
 package com.example.todolist.fragments
 
+import DatabaseHandler
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
@@ -11,18 +12,26 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.todolist.MainActivity
 import com.example.todolist.R
 import com.example.todolist.database.TaskModel
+import com.example.todolist.database.TasksRepositoryImpl
 import com.example.todolist.viewModels.TasksViewModel
+import com.example.todolist.viewModels.TasksViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class FragmentTaskDetails(private val task: TaskModel, private var tasksViewModel: TasksViewModel) : Fragment() {
+class FragmentTaskDetails : Fragment() {
 
+    private lateinit var task: TaskModel
+
+    lateinit var databaseHandler: DatabaseHandler
+    lateinit var tasksViewModel: TasksViewModel
+    lateinit var tasksRepositoryImpl: TasksRepositoryImpl
     private lateinit var taskTitle: TextView
     private lateinit var taskDescription: TextView
     private lateinit var executionTime: TextView
@@ -35,6 +44,35 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
     private lateinit var editTask: FloatingActionButton
 
 
+
+    companion object {
+        private const val ARG_TASK_ID = "task_id"
+        private const val ARG_TASK_TITLE = "task_title"
+        private const val ARG_TASK_DESCRIPTION = "task_description"
+        private const val ARG_CREATION_TIME = "creation_time"
+        private const val ARG_EXECUTION_TIME = "execution_time"
+        private const val ARG_COMPLETED = "completed"
+        private const val ARG_NOTIFICATION_ENABLED = "notification_enabled"
+        private const val ARG_CATEGORY = "category"
+        private const val ARG_ATTACHMENTS = "attachments"
+
+        fun newInstance(task: TaskModel): FragmentTaskDetails {
+            val fragment = FragmentTaskDetails()
+            val args = Bundle().apply {
+                putInt(ARG_TASK_ID, task.id)
+                putString(ARG_TASK_TITLE, task.title)
+                putString(ARG_TASK_DESCRIPTION, task.description)
+                putLong(ARG_CREATION_TIME, task.creationTime.time)
+                putLong(ARG_EXECUTION_TIME, task.executionTime?.time ?: -1L)
+                putInt(ARG_COMPLETED, task.completed)
+                putInt(ARG_NOTIFICATION_ENABLED, task.notificationEnabled)
+                putString(ARG_CATEGORY, task.category)
+                putStringArrayList(ARG_ATTACHMENTS, ArrayList(task.attachments))
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,6 +80,30 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_details, container, false)
+
+        arguments?.let {
+            val taskId = it.getInt(ARG_TASK_ID)
+            val taskTitle = it.getString(ARG_TASK_TITLE) ?: ""
+            val taskDescription = it.getString(ARG_TASK_DESCRIPTION) ?: ""
+            val creationTime = Date(it.getLong(ARG_CREATION_TIME))
+            val executionTime = it.getLong(ARG_EXECUTION_TIME).takeIf { it != -1L }?.let { Date(it) }
+            val completed = it.getInt(ARG_COMPLETED)
+            val notificationEnabled = it.getInt(ARG_NOTIFICATION_ENABLED)
+            val category = it.getString(ARG_CATEGORY) ?: ""
+            val attachments = it.getStringArrayList(ARG_ATTACHMENTS) ?: listOf<String>()
+
+            task = TaskModel(
+                id = taskId,
+                title = taskTitle,
+                description = taskDescription,
+                creationTime = creationTime,
+                executionTime = executionTime,
+                completed = completed,
+                notificationEnabled = notificationEnabled,
+                category = category,
+                attachments = attachments
+            )
+        }
 
         editTask = view.findViewById(R.id.editTask)
         taskAttachments = view.findViewById(R.id.taskAttachments)
@@ -66,6 +128,12 @@ class FragmentTaskDetails(private val task: TaskModel, private var tasksViewMode
             completedImageView.setImageResource(R.drawable.ic_not_done)
         }
         notificationSwitch.isChecked = task.notificationEnabled == 1
+
+
+        databaseHandler = DatabaseHandler(requireContext())
+        tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
+        val factory = TasksViewModelFactory(tasksRepositoryImpl)
+        tasksViewModel = ViewModelProvider(requireActivity(), factory).get(TasksViewModel::class.java)
 
         editTask.setOnClickListener {
             val dialog = EditTaskDialogFragment(task,tasksViewModel,::onCloseFragment)

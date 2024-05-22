@@ -6,26 +6,19 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.Spinner
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.adapters.TasksAdapter
-import com.example.todolist.database.TaskModel
 import com.example.todolist.database.TasksRepositoryImpl
-import com.example.todolist.fragments.FragmentSettings
 import com.example.todolist.fragments.FragmentTaskDetails
 import com.example.todolist.viewModels.TasksViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -33,6 +26,8 @@ import java.util.Calendar
 import android.Manifest
 import android.app.NotificationManager
 import android.content.Intent
+import android.os.Parcel
+import android.os.Parcelable
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationManagerCompat
@@ -126,16 +121,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
-
         adapterRecycler = TasksAdapter(
             this,
             tasksViewModel.tasksData.value ?: listOf(),
             tasksViewModel = tasksViewModel,
             onTaskItemClick = { taskId ->
-                val task = tasksViewModel.tasksData.value?.find { it.id == taskId }
-                task?.let {
-                    val fragment = FragmentTaskDetails(it,tasksViewModel)
+                tasksViewModel.tasksData.value?.find { it.id == taskId }?.let { task ->
+                    val fragment = FragmentTaskDetails.newInstance(task)
                     supportFragmentManager.beginTransaction()
                         .setCustomAnimations(
                             androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom,
