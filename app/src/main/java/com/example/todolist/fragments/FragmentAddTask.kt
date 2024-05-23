@@ -37,6 +37,7 @@ class FragmentAddTask: Fragment() {
     lateinit var databaseHandler: DatabaseHandler
     lateinit var tasksViewModel: TasksViewModel
     lateinit var tasksRepositoryImpl: TasksRepositoryImpl
+    lateinit var mainActivity : MainActivity
 
     private lateinit var titleNewTask: TextInputEditText
     private lateinit var descriptionNewTask: TextInputEditText
@@ -91,6 +92,7 @@ class FragmentAddTask: Fragment() {
         addAttachments = view.findViewById(R.id.addAttachments)
         addTaskButton = view.findViewById(R.id.addTaskButton)
         selectedAttachmentsLayout = view.findViewById(R.id.selectedAttachmentsLayout)
+
 
 
         if (savedInstanceState != null) {
@@ -198,6 +200,12 @@ class FragmentAddTask: Fragment() {
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mainActivity = activity as MainActivity
+        mainActivity.addTask.visibility = View.GONE
+    }
+
     private fun addImageView(uri: Uri) {
         val imageView = ImageView(context)
         val layoutParams = LinearLayout.LayoutParams(
@@ -230,6 +238,6 @@ class FragmentAddTask: Fragment() {
     }
     override fun onDestroyView() {
         super.onDestroyView()
-        (activity as? MainActivity)?.addTask?.visibility = View.VISIBLE
+        mainActivity.addTask.visibility = View.VISIBLE
     }
 }

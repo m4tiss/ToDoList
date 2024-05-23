@@ -13,6 +13,8 @@ import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.example.todolist.MainActivity
+import com.example.todolist.ModalBottomSheet
 import com.example.todolist.R
 import com.example.todolist.adapters.TasksAdapter
 import com.example.todolist.database.TaskModel
@@ -22,12 +24,13 @@ import com.example.todolist.viewModels.TasksViewModelFactory
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 
-class FragmentSettings(
-    private val recyclerTasks: RecyclerView,
-    private val adapterRecycler: TasksAdapter,
-    private val onCloseModal: () -> Unit
-): Fragment() {
+class FragmentSettings: Fragment() {
 
+
+    lateinit var mainActivity : MainActivity
+    lateinit var recyclerTasks: RecyclerView
+    lateinit var adapterRecycler: TasksAdapter
+    lateinit var bottomSheetFragment: ModalBottomSheet
 
     lateinit var databaseHandler: DatabaseHandler
     lateinit var tasksViewModel: TasksViewModel
@@ -143,12 +146,19 @@ class FragmentSettings(
 
             val selectedStatus = spinner.selectedItem.toString()
             filterTasks(selectedCategory, selectedStatus,selectedSort)
-            onCloseModal()
+            bottomSheetFragment.dismiss()
+
         }
 
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mainActivity = activity as MainActivity
+        recyclerTasks = mainActivity.recyclerTasks
+        adapterRecycler = mainActivity.adapterRecycler
+    }
 
     private fun filterTasks(selectedCategory: String, selectedStatus: String,selectedSort: String) {
         val filteredTasks = tasksViewModel.tasksData.value?.let { allTasks ->

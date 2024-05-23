@@ -35,6 +35,7 @@ import com.example.todolist.viewModels.TasksViewModelFactory
 
 class MainActivity : AppCompatActivity() {
 
+    lateinit var bottomSheetFragment : ModalBottomSheet
     lateinit var settingsImageView: ImageView
     lateinit var recyclerTasks: RecyclerView
     lateinit var addTask: FloatingActionButton
@@ -89,6 +90,8 @@ class MainActivity : AppCompatActivity() {
         val factory = TasksViewModelFactory(tasksRepositoryImpl)
         tasksViewModel = ViewModelProvider(this, factory).get(TasksViewModel::class.java)
 
+        bottomSheetFragment = ModalBottomSheet()
+
 
         addTask.setOnClickListener {
             val fragment = FragmentAddTask()
@@ -102,7 +105,6 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.main, fragment)
                 .addToBackStack(null)
                 .commit()
-            addTask.visibility = View.GONE
         }
 
         searchButton.setOnClickListener {
@@ -167,7 +169,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun showBottomSheet() {
-        val bottomSheetFragment = ModalBottomSheet(recyclerTasks,adapterRecycler)
         bottomSheetFragment.show(supportFragmentManager, ModalBottomSheet.TAG)
     }
 
