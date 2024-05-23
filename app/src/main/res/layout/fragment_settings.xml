@@ -171,15 +171,4 @@
 
     </LinearLayout>
 
-
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/saveChanges"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:textSize="20sp"
-        android:layout_gravity="center"
-        android:text="Save changes"/>
-
-
 </LinearLayout>

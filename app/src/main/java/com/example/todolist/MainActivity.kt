@@ -23,6 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import android.Manifest
 import android.app.NotificationManager
 import android.content.Intent
+import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationManagerCompat
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var tasksViewModel: TasksViewModel
     private lateinit var tasksRepositoryImpl: TasksRepositoryImpl
     lateinit var adapterRecycler: TasksAdapter
+    lateinit var sharedPreferences: SharedPreferences
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -69,10 +71,7 @@ class MainActivity : AppCompatActivity() {
         searchText = findViewById(R.id.searchText)
 
 
-        val prefs = getSharedPreferences("com.example.todolist.preferences", Context.MODE_PRIVATE)
-        if (!prefs.contains("NotificationTime")) {
-            prefs.edit().putInt("NotificationTime", 1).apply()
-        }
+        setUpSharedPreferences()
 
         recyclerTasks = findViewById(R.id.recyclerTasks)
         recyclerTasks.layoutManager = LinearLayoutManager(this)
@@ -110,6 +109,9 @@ class MainActivity : AppCompatActivity() {
                     adapterRecycler.setData(it)
                 }
             }
+            sharedPreferences.edit().putString("Status", "All").apply()
+            sharedPreferences.edit().putString("Category", "All").apply()
+            sharedPreferences.edit().putString("SortType", "Urgent").apply()
         }
 
         adapterRecycler = TasksAdapter(
@@ -206,6 +208,21 @@ class MainActivity : AppCompatActivity() {
             putExtra("android.provider.extra.APP_PACKAGE", packageName)
         }
         startActivity(intent)
+    }
+    private fun setUpSharedPreferences(){
+        sharedPreferences = getSharedPreferences("com.example.todolist.preferences", Context.MODE_PRIVATE)
+        if (!sharedPreferences.contains("NotificationTime")) {
+            sharedPreferences.edit().putInt("NotificationTime", 1).apply()
+        }
+        if (!sharedPreferences.contains("Category")) {
+            sharedPreferences.edit().putString("Category", "All").apply()
+        }
+        if (!sharedPreferences.contains("SortType")) {
+            sharedPreferences.edit().putString("SortType", "Urgent").apply()
+        }
+        if (!sharedPreferences.contains("Status")) {
+            sharedPreferences.edit().putString("Status", "All").apply()
+        }
     }
 
 }
