@@ -12,7 +12,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
 class ModalBottomSheet(
-                        private val tasksViewModel: TasksViewModel,
                        private val recyclerTasks: RecyclerView,
                        private val adapterRecycler: TasksAdapter) : BottomSheetDialogFragment(R.layout.bottom_sheet) {
 
@@ -28,7 +27,7 @@ class ModalBottomSheet(
         behavior.isDraggable = true
 
         val preferencesFragmentContainer = view.findViewById<FragmentContainerView>(R.id.settingsFragment)
-        val fragmentSettings = FragmentSettings(tasksViewModel, recyclerTasks, adapterRecycler) {
+        val fragmentSettings = FragmentSettings(recyclerTasks, adapterRecycler) {
             onCloseModal()
         }
 

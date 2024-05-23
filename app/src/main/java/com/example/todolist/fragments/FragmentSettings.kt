@@ -1,5 +1,6 @@
 package com.example.todolist.fragments
 
+import DatabaseHandler
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
@@ -10,21 +11,27 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.R
 import com.example.todolist.adapters.TasksAdapter
 import com.example.todolist.database.TaskModel
+import com.example.todolist.database.TasksRepositoryImpl
 import com.example.todolist.viewModels.TasksViewModel
+import com.example.todolist.viewModels.TasksViewModelFactory
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 
 class FragmentSettings(
-    private val tasksViewModel: TasksViewModel,
     private val recyclerTasks: RecyclerView,
     private val adapterRecycler: TasksAdapter,
     private val onCloseModal: () -> Unit
 ): Fragment() {
 
+
+    lateinit var databaseHandler: DatabaseHandler
+    lateinit var tasksViewModel: TasksViewModel
+    lateinit var tasksRepositoryImpl: TasksRepositoryImpl
     private lateinit var spinner: Spinner
     private lateinit var spinnerNotification: Spinner
     private lateinit var toggleCategoryButton: MaterialButtonToggleGroup
@@ -51,6 +58,11 @@ class FragmentSettings(
     ): View? {
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
 
+
+        databaseHandler = DatabaseHandler(requireContext())
+        tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
+        val factory = TasksViewModelFactory(tasksRepositoryImpl)
+        tasksViewModel = ViewModelProvider(requireActivity(), factory).get(TasksViewModel::class.java)
 
         spinner =  view.findViewById(R.id.spinner)
         spinnerNotification =  view.findViewById(R.id.spinnerNotification)

@@ -167,7 +167,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun showBottomSheet() {
-        val bottomSheetFragment = ModalBottomSheet(tasksViewModel,recyclerTasks,adapterRecycler)
+        val bottomSheetFragment = ModalBottomSheet(recyclerTasks,adapterRecycler)
         bottomSheetFragment.show(supportFragmentManager, ModalBottomSheet.TAG)
     }
 
