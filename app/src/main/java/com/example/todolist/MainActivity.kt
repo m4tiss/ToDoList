@@ -80,6 +80,7 @@ class MainActivity : AppCompatActivity() {
         databaseHandler = DatabaseHandler(this)
         tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
         tasksViewModel = TasksViewModel(tasksRepositoryImpl)
+        tasksViewModel.fetchTasksFromDatabase()
         bottomSheetFragment = ModalBottomSheet()
 
 
@@ -109,9 +110,7 @@ class MainActivity : AppCompatActivity() {
                     adapterRecycler.setData(it)
                 }
             }
-            sharedPreferences.edit().putString("Status", "All").apply()
-            sharedPreferences.edit().putString("Category", "All").apply()
-            sharedPreferences.edit().putString("SortType", "Urgent").apply()
+            setDefaultPreferences()
         }
 
         adapterRecycler = TasksAdapter(
@@ -137,6 +136,7 @@ class MainActivity : AppCompatActivity() {
 
         tasksViewModel.tasksData.observe(this) { tasks ->
                 adapterRecycler.setData(tasks)
+                setDefaultPreferences()
         }
 
 
@@ -208,6 +208,12 @@ class MainActivity : AppCompatActivity() {
             putExtra("android.provider.extra.APP_PACKAGE", packageName)
         }
         startActivity(intent)
+    }
+
+    private fun setDefaultPreferences(){
+        sharedPreferences.edit().putString("Status", "All").apply()
+        sharedPreferences.edit().putString("Category", "All").apply()
+        sharedPreferences.edit().putString("SortType", "Urgent").apply()
     }
     private fun setUpSharedPreferences(){
         sharedPreferences = getSharedPreferences("com.example.todolist.preferences", Context.MODE_PRIVATE)

@@ -13,11 +13,7 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
         get() = _tasksData
 
 
-    init {
-        fetchTasksFromDatabase()
-    }
-
-    private fun fetchTasksFromDatabase() {
+    fun fetchTasksFromDatabase() {
         val tasksFromDatabase = repository.getAllTasks()
         _tasksData.value = tasksFromDatabase
     }

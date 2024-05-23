@@ -162,7 +162,7 @@ class FragmentTaskDetails : Fragment() {
         tasksViewModel = mainActivity.tasksViewModel
         mainActivity.addTask.visibility = View.GONE
         editTask.setOnClickListener {
-            val dialog = EditTaskDialogFragment(task,tasksViewModel,::onCloseFragment)
+            val dialog = EditTaskDialogFragment(task,::onCloseFragment)
             dialog.show(childFragmentManager, "EditTaskDialogFragment")
         }
         notificationSwitch.setOnCheckedChangeListener { _, isChecked ->

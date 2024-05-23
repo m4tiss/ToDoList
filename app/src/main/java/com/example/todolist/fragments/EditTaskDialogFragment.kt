@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -12,6 +13,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
+import com.example.todolist.MainActivity
 import com.example.todolist.R
 import com.example.todolist.database.TaskModel
 import com.example.todolist.viewModels.TasksViewModel
@@ -25,9 +27,12 @@ import java.util.Locale
 
 class EditTaskDialogFragment(
     private val task: TaskModel,
-    private val tasksViewModel: TasksViewModel,
     private val onCloseFragment: () -> Unit
 ) : DialogFragment() {
+
+
+    private lateinit var mainActivity : MainActivity
+    private lateinit var tasksViewModel: TasksViewModel
 
     private lateinit var taskTitle: TextView
     private lateinit var taskDescription: TextView
@@ -71,6 +76,13 @@ class EditTaskDialogFragment(
         taskTitle.text = task.title
         taskDescription.text = task.description
         executionTimeButton.text = formatDate(task.executionTime)
+        executionDate = task.executionTime
+
+        mainActivity = activity as MainActivity
+        tasksViewModel = mainActivity.tasksViewModel
+
+
+
 
         when (task.category) {
             "Family" -> categoryEditTask.check(catFamily.id)
@@ -78,7 +90,9 @@ class EditTaskDialogFragment(
             "Sport" -> categoryEditTask.check(catSport.id)
         }
 
-        categoryEditTask.addOnButtonCheckedListener { group, selectedId, isSelected ->
+        selectedCategory = task.category
+
+            categoryEditTask.addOnButtonCheckedListener { group, selectedId, isSelected ->
             if (!isProgrammaticChangeCategory && isSelected) {
                 isProgrammaticChangeCategory = true
                 val checkedButton = group.findViewById<Button>(selectedId)
@@ -160,6 +174,11 @@ class EditTaskDialogFragment(
             }
 
         return builder.create()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
     }
 
     private fun addImageView(uri: Uri) {
