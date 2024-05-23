@@ -26,8 +26,8 @@ class FragmentTaskDetails : Fragment() {
     private lateinit var task: TaskModel
 
 
-    lateinit var mainActivity : MainActivity
-    lateinit var tasksViewModel: TasksViewModel
+    private lateinit var mainActivity : MainActivity
+    private lateinit var tasksViewModel: TasksViewModel
 
     private lateinit var taskTitle: TextView
     private lateinit var taskDescription: TextView

@@ -3,19 +3,12 @@ package com.example.todolist
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.FragmentContainerView
-import androidx.recyclerview.widget.RecyclerView
-import com.example.todolist.adapters.TasksAdapter
 import com.example.todolist.fragments.FragmentSettings
-import com.example.todolist.viewModels.TasksViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
 class ModalBottomSheet : BottomSheetDialogFragment(R.layout.bottom_sheet) {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -31,10 +24,6 @@ class ModalBottomSheet : BottomSheetDialogFragment(R.layout.bottom_sheet) {
             .replace(preferencesFragmentContainer.id, fragmentSettings)
             .commit()
     }
-    fun onCloseModal() {
-        dismiss()
-    }
-
     companion object {
         const val TAG = "ModalBottomSheet"
     }

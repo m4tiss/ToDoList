@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
@@ -31,14 +30,14 @@ import androidx.core.app.NotificationManagerCompat
 class MainActivity : AppCompatActivity() {
 
     lateinit var bottomSheetFragment : ModalBottomSheet
-    lateinit var settingsImageView: ImageView
+    private lateinit var settingsImageView: ImageView
     lateinit var recyclerTasks: RecyclerView
     lateinit var addTask: FloatingActionButton
-    lateinit var searchButton: ImageView
-    lateinit var searchText: EditText
-    lateinit var databaseHandler: DatabaseHandler
+    private lateinit var searchButton: ImageView
+    private lateinit var searchText: EditText
+    private lateinit var databaseHandler: DatabaseHandler
     lateinit var tasksViewModel: TasksViewModel
-    lateinit var tasksRepositoryImpl: TasksRepositoryImpl
+    private lateinit var tasksRepositoryImpl: TasksRepositoryImpl
     lateinit var adapterRecycler: TasksAdapter
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()

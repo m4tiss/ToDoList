@@ -175,7 +175,6 @@ class FragmentAddTask: Fragment() {
                 emptyList()
             }
 
-            println( "Lista:" +attachmentsList)
 
             val currentTime = Calendar.getInstance().time
 

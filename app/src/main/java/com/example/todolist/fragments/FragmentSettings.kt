@@ -23,12 +23,12 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 class FragmentSettings: Fragment() {
 
 
-    lateinit var mainActivity : MainActivity
-    lateinit var recyclerTasks: RecyclerView
-    lateinit var adapterRecycler: TasksAdapter
-    lateinit var bottomSheetFragment: ModalBottomSheet
+    private lateinit var mainActivity : MainActivity
+    private lateinit var recyclerTasks: RecyclerView
+    private lateinit var adapterRecycler: TasksAdapter
+    private lateinit var bottomSheetFragment: ModalBottomSheet
 
-    lateinit var tasksViewModel: TasksViewModel
+    private lateinit var tasksViewModel: TasksViewModel
 
     private lateinit var spinner: Spinner
     private lateinit var spinnerNotification: Spinner
