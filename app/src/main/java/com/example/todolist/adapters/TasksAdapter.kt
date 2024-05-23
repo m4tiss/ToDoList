@@ -1,5 +1,6 @@
 package com.example.todolist.adapters
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
@@ -105,6 +106,7 @@ class TasksAdapter(private val context: Context,
         ItemTouchHelper(simpleItemTouchCallback)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setData(newTaskList: List<TaskModel>) {
         taskList = newTaskList
         notifyDataSetChanged()

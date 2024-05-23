@@ -160,6 +160,7 @@ class FragmentTaskDetails : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         mainActivity = activity as MainActivity
         tasksViewModel = mainActivity.tasksViewModel
+        mainActivity.addTask.visibility = View.GONE
         editTask.setOnClickListener {
             val dialog = EditTaskDialogFragment(task,tasksViewModel,::onCloseFragment)
             dialog.show(childFragmentManager, "EditTaskDialogFragment")
@@ -181,6 +182,6 @@ class FragmentTaskDetails : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        (activity as? MainActivity)?.addTask?.visibility = View.VISIBLE
+        mainActivity.addTask.visibility = View.VISIBLE
     }
 }

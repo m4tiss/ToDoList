@@ -81,10 +81,6 @@ class MainActivity : AppCompatActivity() {
 
         databaseHandler = DatabaseHandler(this)
         tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
-
-        //val factory = TasksViewModelFactory(tasksRepositoryImpl)
-        //tasksViewModel = ViewModelProvider(this, factory).get(TasksViewModel::class.java)
-
         tasksViewModel = TasksViewModel(tasksRepositoryImpl)
         bottomSheetFragment = ModalBottomSheet()
 
@@ -109,12 +105,10 @@ class MainActivity : AppCompatActivity() {
                 val filteredTasks = tasksViewModel.tasksData.value?.filter { it.title.contains(query, ignoreCase = true) }
                 filteredTasks?.let {
                     adapterRecycler.setData(it)
-                    adapterRecycler.notifyDataSetChanged()
                 }
             } else {
                 tasksViewModel.tasksData.value?.let {
                     adapterRecycler.setData(it)
-                    adapterRecycler.notifyDataSetChanged()
                 }
             }
         }
@@ -136,14 +130,12 @@ class MainActivity : AppCompatActivity() {
                         .replace(R.id.main, fragment)
                         .addToBackStack(null)
                         .commit()
-                    addTask.visibility = View.GONE
                 }
             }
         )
 
         tasksViewModel.tasksData.observe(this) { tasks ->
                 adapterRecycler.setData(tasks)
-                adapterRecycler.notifyDataSetChanged()
         }
 
 
