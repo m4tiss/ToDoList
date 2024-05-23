@@ -1,6 +1,5 @@
 package com.example.todolist
 
-import DatabaseHandler
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
@@ -18,12 +17,9 @@ import java.util.Calendar
 import java.util.Date
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SwitchCompat
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.todolist.database.TaskModel
-import com.example.todolist.database.TasksRepositoryImpl
 import com.example.todolist.viewModels.TasksViewModel
-import com.example.todolist.viewModels.TasksViewModelFactory
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.textfield.TextInputEditText
 import java.text.SimpleDateFormat
@@ -34,10 +30,9 @@ class FragmentAddTask: Fragment() {
 
 
 
-    lateinit var databaseHandler: DatabaseHandler
-    lateinit var tasksViewModel: TasksViewModel
-    lateinit var tasksRepositoryImpl: TasksRepositoryImpl
-    lateinit var mainActivity : MainActivity
+
+    private lateinit var mainActivity : MainActivity
+    private lateinit var tasksViewModel: TasksViewModel
 
     private lateinit var titleNewTask: TextInputEditText
     private lateinit var descriptionNewTask: TextInputEditText
@@ -103,10 +98,15 @@ class FragmentAddTask: Fragment() {
             }
         }
 
-        databaseHandler = DatabaseHandler(requireContext())
-        tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
-        val factory = TasksViewModelFactory(tasksRepositoryImpl)
-        tasksViewModel = ViewModelProvider(requireActivity(), factory).get(TasksViewModel::class.java)
+
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mainActivity = activity as MainActivity
+        mainActivity.addTask.visibility = View.GONE
+        tasksViewModel = mainActivity.tasksViewModel
 
 
         categoryNewTask.check(catFamily.id)
@@ -179,7 +179,7 @@ class FragmentAddTask: Fragment() {
 
             val currentTime = Calendar.getInstance().time
 
-             val newTask = TaskModel(
+            val newTask = TaskModel(
                 id = 1,
                 title = title,
                 description = description,
@@ -194,16 +194,8 @@ class FragmentAddTask: Fragment() {
             NotificationUtils.setNotification(requireContext(), insertedTask)
 
 
-        parentFragmentManager.popBackStack()
+            parentFragmentManager.popBackStack()
         }
-
-        return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        mainActivity = activity as MainActivity
-        mainActivity.addTask.visibility = View.GONE
     }
 
     private fun addImageView(uri: Uri) {

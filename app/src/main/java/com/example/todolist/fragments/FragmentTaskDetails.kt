@@ -1,6 +1,5 @@
 package com.example.todolist.fragments
 
-import DatabaseHandler
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
@@ -12,14 +11,11 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.todolist.MainActivity
 import com.example.todolist.R
 import com.example.todolist.database.TaskModel
-import com.example.todolist.database.TasksRepositoryImpl
 import com.example.todolist.viewModels.TasksViewModel
-import com.example.todolist.viewModels.TasksViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -29,9 +25,10 @@ class FragmentTaskDetails : Fragment() {
 
     private lateinit var task: TaskModel
 
-    lateinit var databaseHandler: DatabaseHandler
+
+    lateinit var mainActivity : MainActivity
     lateinit var tasksViewModel: TasksViewModel
-    lateinit var tasksRepositoryImpl: TasksRepositoryImpl
+
     private lateinit var taskTitle: TextView
     private lateinit var taskDescription: TextView
     private lateinit var executionTime: TextView
@@ -129,26 +126,6 @@ class FragmentTaskDetails : Fragment() {
         }
         notificationSwitch.isChecked = task.notificationEnabled == 1
 
-
-        databaseHandler = DatabaseHandler(requireContext())
-        tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
-        val factory = TasksViewModelFactory(tasksRepositoryImpl)
-        tasksViewModel = ViewModelProvider(requireActivity(), factory).get(TasksViewModel::class.java)
-
-        editTask.setOnClickListener {
-            val dialog = EditTaskDialogFragment(task,tasksViewModel,::onCloseFragment)
-            dialog.show(childFragmentManager, "EditTaskDialogFragment")
-        }
-        notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
-            val newNotification = if (isChecked) 1 else 0
-            if (isChecked != (task.notificationEnabled == 1)) {
-                task.notificationEnabled = newNotification
-                tasksViewModel.updateNotification(task.id, newNotification)
-            }
-        }
-
-        displayAttachments()
-
         return view
     }
 
@@ -178,7 +155,27 @@ class FragmentTaskDetails : Fragment() {
         }
     }
 
-    fun onCloseFragment() {
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mainActivity = activity as MainActivity
+        tasksViewModel = mainActivity.tasksViewModel
+        editTask.setOnClickListener {
+            val dialog = EditTaskDialogFragment(task,tasksViewModel,::onCloseFragment)
+            dialog.show(childFragmentManager, "EditTaskDialogFragment")
+        }
+        notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
+            val newNotification = if (isChecked) 1 else 0
+            if (isChecked != (task.notificationEnabled == 1)) {
+                task.notificationEnabled = newNotification
+                tasksViewModel.updateNotification(task.id, newNotification)
+            }
+        }
+
+        displayAttachments()
+    }
+
+    private fun onCloseFragment() {
         parentFragmentManager.popBackStack()
     }
 

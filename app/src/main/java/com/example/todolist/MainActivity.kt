@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.adapters.TasksAdapter
@@ -22,16 +21,12 @@ import com.example.todolist.database.TasksRepositoryImpl
 import com.example.todolist.fragments.FragmentTaskDetails
 import com.example.todolist.viewModels.TasksViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import java.util.Calendar
 import android.Manifest
 import android.app.NotificationManager
 import android.content.Intent
-import android.os.Parcel
-import android.os.Parcelable
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationManagerCompat
-import com.example.todolist.viewModels.TasksViewModelFactory
 
 class MainActivity : AppCompatActivity() {
 
@@ -87,9 +82,10 @@ class MainActivity : AppCompatActivity() {
         databaseHandler = DatabaseHandler(this)
         tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
 
-        val factory = TasksViewModelFactory(tasksRepositoryImpl)
-        tasksViewModel = ViewModelProvider(this, factory).get(TasksViewModel::class.java)
+        //val factory = TasksViewModelFactory(tasksRepositoryImpl)
+        //tasksViewModel = ViewModelProvider(this, factory).get(TasksViewModel::class.java)
 
+        tasksViewModel = TasksViewModel(tasksRepositoryImpl)
         bottomSheetFragment = ModalBottomSheet()
 
 

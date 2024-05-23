@@ -1,6 +1,5 @@
 package com.example.todolist.fragments
 
-import DatabaseHandler
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
@@ -11,16 +10,13 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.MainActivity
 import com.example.todolist.ModalBottomSheet
 import com.example.todolist.R
 import com.example.todolist.adapters.TasksAdapter
 import com.example.todolist.database.TaskModel
-import com.example.todolist.database.TasksRepositoryImpl
 import com.example.todolist.viewModels.TasksViewModel
-import com.example.todolist.viewModels.TasksViewModelFactory
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 
@@ -32,9 +28,8 @@ class FragmentSettings: Fragment() {
     lateinit var adapterRecycler: TasksAdapter
     lateinit var bottomSheetFragment: ModalBottomSheet
 
-    lateinit var databaseHandler: DatabaseHandler
     lateinit var tasksViewModel: TasksViewModel
-    lateinit var tasksRepositoryImpl: TasksRepositoryImpl
+
     private lateinit var spinner: Spinner
     private lateinit var spinnerNotification: Spinner
     private lateinit var toggleCategoryButton: MaterialButtonToggleGroup
@@ -60,12 +55,6 @@ class FragmentSettings: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
-
-
-        databaseHandler = DatabaseHandler(requireContext())
-        tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
-        val factory = TasksViewModelFactory(tasksRepositoryImpl)
-        tasksViewModel = ViewModelProvider(requireActivity(), factory).get(TasksViewModel::class.java)
 
         spinner =  view.findViewById(R.id.spinner)
         spinnerNotification =  view.findViewById(R.id.spinnerNotification)
@@ -158,6 +147,9 @@ class FragmentSettings: Fragment() {
         mainActivity = activity as MainActivity
         recyclerTasks = mainActivity.recyclerTasks
         adapterRecycler = mainActivity.adapterRecycler
+        bottomSheetFragment = mainActivity.bottomSheetFragment
+        tasksViewModel = mainActivity.tasksViewModel
+
     }
 
     private fun filterTasks(selectedCategory: String, selectedStatus: String,selectedSort: String) {
