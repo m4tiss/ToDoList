@@ -44,7 +44,7 @@ class EditTaskDialogFragment : DialogFragment() {
     private lateinit var catFamily: Button
     private lateinit var catJob: Button
     private var executionDate: Date? = null
-    private val selectedAttachments = mutableListOf<Uri>()
+    private val selectedAttachments = mutableListOf<String>()
     private var isProgrammaticChangeCategory = false
     private var selectedCategory = ""
 
@@ -202,9 +202,8 @@ class EditTaskDialogFragment : DialogFragment() {
 
         task.attachments?.let { attachments ->
             for (uriString in attachments) {
-                val uri = Uri.parse(uriString)
-                selectedAttachments.add(uri)
-                loadImageView(uri)
+                selectedAttachments.add(uriString)
+                loadImageView(uriString)
             }
         }
 
@@ -214,9 +213,7 @@ class EditTaskDialogFragment : DialogFragment() {
                 val title = taskTitle.text.toString()
                 val description = taskDescription.text.toString()
 
-                val updatedAttachments = selectedAttachments.map { uri ->
-                    removeLeadingSemicolon(uri.toString())
-                }
+                val updatedAttachments = selectedAttachments
 
                 val updatedTask = task.copy(
                     title = title,
@@ -253,9 +250,8 @@ class EditTaskDialogFragment : DialogFragment() {
             inputStream?.close()
         }
 
-        val filePath = Uri.fromFile(file)
+        val filePath = Uri.fromFile(file).toString()
         selectedAttachments.add(filePath)
-
         return file
     }
     private fun addImageView(uri: Uri) {
@@ -271,17 +267,15 @@ class EditTaskDialogFragment : DialogFragment() {
             Glide.with(this)
                 .load(uri)
                 .into(imageView)
-
             taskAttachments.addView(imageView)
-
             imageView.setOnLongClickListener {
-                removeImageView(imageView, Uri.fromFile(file), file)
+                removeImageView(imageView, Uri.fromFile(file).toString(), file)
                 true
             }
         }
     }
 
-    private fun loadImageView(uri: Uri) {
+    private fun loadImageView(uri: String) {
         val imageView = ImageView(context)
         val layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -292,27 +286,24 @@ class EditTaskDialogFragment : DialogFragment() {
         Glide.with(this)
             .load(uri)
             .into(imageView)
-
         taskAttachments.addView(imageView)
-
         imageView.setOnLongClickListener {
             removeImageView(imageView, uri,null)
             true
         }
     }
 
-    private fun removeImageView(imageView: ImageView, uri: Uri, file: File?) {
+    private fun removeImageView(imageView: ImageView, uri: String, file: File?) {
         taskAttachments.removeView(imageView)
 
         val iterator = selectedAttachments.iterator()
         while (iterator.hasNext()) {
             val selectedUri = iterator.next()
-            if (selectedUri.equalsByString(uri)) {
+            if (selectedUri == uri) {
                 iterator.remove()
                 break
             }
         }
-
         file?.delete()
     }
 
@@ -322,18 +313,4 @@ class EditTaskDialogFragment : DialogFragment() {
             sdf.format(it)
         } ?: "Set execution time"
     }
-
-    private fun removeLeadingSemicolon(uriString: String): String {
-        return if (uriString.startsWith(";")) {
-            uriString.substring(1)
-        } else {
-            uriString
-        }
-    }
-
-    private fun Uri.equalsByString(other: Uri?): Boolean {
-        if (this == other) return true
-        return this.toString() == other.toString()
-    }
-
 }
