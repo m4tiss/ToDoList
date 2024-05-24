@@ -126,7 +126,7 @@ class FragmentSettings: Fragment() {
                 toggleCategoryButton.clearChecked()
                 toggleCategoryButton.check(selectedId)
                 isProgrammaticChangeCategory = false
-                filterTasks()
+                mainActivity.filterTasks()
             }
         }
 
@@ -145,7 +145,7 @@ class FragmentSettings: Fragment() {
                 toggleSortButton.clearChecked()
                 toggleSortButton.check(selectedId)
                 isProgrammaticChangeSort = false
-                filterTasks()
+                mainActivity.filterTasks()
             }
         }
 
@@ -153,7 +153,7 @@ class FragmentSettings: Fragment() {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedStatus = parent.getItemAtPosition(position).toString()
                 sharedPreferences.edit().putString("Status", selectedStatus).apply()
-                filterTasks()
+                mainActivity.filterTasks()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -177,52 +177,6 @@ class FragmentSettings: Fragment() {
         }
 
 
-    }
-
-    private fun filterTasks() {
-
-        val selectedCategory = sharedPreferences.getString("Category","All")
-        val selectedSort = sharedPreferences.getString("SortType","Urgent")
-        val selectedStatus = sharedPreferences.getString("Status","All")?: "All"
-
-        val filteredTasks = tasksViewModel.tasksData.value?.let { allTasks ->
-            when (selectedCategory) {
-                "All" -> filterTasksByStatus(allTasks, selectedStatus)
-                "Sport", "Family", "Job" -> {
-                    val categoryTasks = allTasks.filter { it.category == selectedCategory }
-                    filterTasksByStatus(categoryTasks, selectedStatus)
-                }
-                else -> listOf()
-            }
-        } ?: listOf()
-
-        val sortedTasks = when (selectedSort) {
-            "Urgent" -> {
-                filteredTasks.sortedWith(compareBy { task ->
-                    task.executionTime?.time ?: Long.MAX_VALUE
-                })
-            }
-            "NonUrgent" -> {
-                filteredTasks.sortedWith(compareByDescending { task ->
-                    task.executionTime?.time ?: Long.MIN_VALUE
-                })
-            }
-            else -> filteredTasks
-        }
-
-        if (!recyclerTasks.isComputingLayout && !recyclerTasks.isAnimating) {
-            adapterRecycler.setData(sortedTasks)
-            adapterRecycler.notifyDataSetChanged()
-        }
-    }
-
-    private fun filterTasksByStatus(tasks: List<TaskModel>, selectedStatus: String): List<TaskModel> {
-        return when (selectedStatus) {
-            "All" -> tasks
-            "In process" -> tasks.filter { it.completed == 0 }
-            "Finished" -> tasks.filter { it.completed == 1 }
-            else -> listOf()
-        }
     }
     private fun checkButtonWithTag(toggleGroup: MaterialButtonToggleGroup, tag: String) {
         for (i in 0 until toggleGroup.childCount) {

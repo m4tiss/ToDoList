@@ -27,6 +27,7 @@ import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationManagerCompat
+import com.example.todolist.database.TaskModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -136,7 +137,7 @@ class MainActivity : AppCompatActivity() {
 
         tasksViewModel.tasksData.observe(this) { tasks ->
                 adapterRecycler.setData(tasks)
-                setDefaultPreferences()
+                filterTasks()
         }
 
 
@@ -228,6 +229,52 @@ class MainActivity : AppCompatActivity() {
         }
         if (!sharedPreferences.contains("Status")) {
             sharedPreferences.edit().putString("Status", "All").apply()
+        }
+    }
+
+    fun filterTasks() {
+
+        val selectedCategory = sharedPreferences.getString("Category","All")
+        val selectedSort = sharedPreferences.getString("SortType","Urgent")
+        val selectedStatus = sharedPreferences.getString("Status","All")?: "All"
+
+        val filteredTasks = tasksViewModel.tasksData.value?.let { allTasks ->
+            when (selectedCategory) {
+                "All" -> filterTasksByStatus(allTasks, selectedStatus)
+                "Sport", "Family", "Job" -> {
+                    val categoryTasks = allTasks.filter { it.category == selectedCategory }
+                    filterTasksByStatus(categoryTasks, selectedStatus)
+                }
+                else -> listOf()
+            }
+        } ?: listOf()
+
+        val sortedTasks = when (selectedSort) {
+            "Urgent" -> {
+                filteredTasks.sortedWith(compareBy { task ->
+                    task.executionTime?.time ?: Long.MAX_VALUE
+                })
+            }
+            "NonUrgent" -> {
+                filteredTasks.sortedWith(compareByDescending { task ->
+                    task.executionTime?.time ?: Long.MIN_VALUE
+                })
+            }
+            else -> filteredTasks
+        }
+
+        if (!recyclerTasks.isComputingLayout && !recyclerTasks.isAnimating) {
+            adapterRecycler.setData(sortedTasks)
+            adapterRecycler.notifyDataSetChanged()
+        }
+    }
+
+    private fun filterTasksByStatus(tasks: List<TaskModel>, selectedStatus: String): List<TaskModel> {
+        return when (selectedStatus) {
+            "All" -> tasks
+            "In process" -> tasks.filter { it.completed == 0 }
+            "Finished" -> tasks.filter { it.completed == 1 }
+            else -> listOf()
         }
     }
 
