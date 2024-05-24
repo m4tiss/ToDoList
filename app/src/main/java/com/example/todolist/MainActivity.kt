@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
 
         databaseHandler = DatabaseHandler(this)
         tasksRepositoryImpl = TasksRepositoryImpl(databaseHandler)
-        tasksViewModel = TasksViewModel(tasksRepositoryImpl)
+        tasksViewModel = TasksViewModel(this,tasksRepositoryImpl)
         tasksViewModel.fetchTasksFromDatabase()
         bottomSheetFragment = ModalBottomSheet()
 

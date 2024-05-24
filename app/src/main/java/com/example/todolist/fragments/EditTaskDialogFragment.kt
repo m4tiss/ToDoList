@@ -5,14 +5,12 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.FragmentManager
 import com.bumptech.glide.Glide
 import com.example.todolist.MainActivity
 import com.example.todolist.R
@@ -21,6 +19,9 @@ import com.example.todolist.viewModels.TasksViewModel
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -47,13 +48,18 @@ class EditTaskDialogFragment : DialogFragment() {
     private var isProgrammaticChangeCategory = false
     private var selectedCategory = ""
 
-    private var onCloseFragment: () -> Unit = {}
+    private val photosDirectory: File by lazy {
+        File(requireContext().getExternalFilesDir(null), "photos").apply {
+            if (!exists()) {
+                mkdirs()
+            }
+        }
+    }
 
     private val openDocumentLauncher = registerForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
         uri?.let {
-            selectedAttachments.add(it)
             addImageView(it)
         }
     }
@@ -198,7 +204,7 @@ class EditTaskDialogFragment : DialogFragment() {
             for (uriString in attachments) {
                 val uri = Uri.parse(uriString)
                 selectedAttachments.add(uri)
-                addImageView(uri)
+                loadImageView(uri)
             }
         }
 
@@ -219,6 +225,7 @@ class EditTaskDialogFragment : DialogFragment() {
                     category = selectedCategory,
                     attachments = updatedAttachments
                 )
+                println(updatedAttachments)
 
                 tasksViewModel.updateTask(updatedTask)
                 val fragmentManager = requireActivity().supportFragmentManager
@@ -232,12 +239,49 @@ class EditTaskDialogFragment : DialogFragment() {
         return builder.create()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private fun saveImageToInternalStorage(uri: Uri): File? {
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
+        val file = File(photosDirectory, "${System.currentTimeMillis()}.jpg")
+        try {
+            FileOutputStream(file).use { outputStream ->
+                inputStream?.copyTo(outputStream)
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return null
+        } finally {
+            inputStream?.close()
+        }
 
+        val filePath = Uri.fromFile(file)
+        selectedAttachments.add(filePath)
+
+        return file
+    }
+    private fun addImageView(uri: Uri) {
+        val file = saveImageToInternalStorage(uri)
+        file?.let {
+            val imageView = ImageView(context)
+            val layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            imageView.layoutParams = layoutParams
+
+            Glide.with(this)
+                .load(uri)
+                .into(imageView)
+
+            taskAttachments.addView(imageView)
+
+            imageView.setOnLongClickListener {
+                removeImageView(imageView, Uri.fromFile(file), file)
+                true
+            }
+        }
     }
 
-    private fun addImageView(uri: Uri) {
+    private fun loadImageView(uri: Uri) {
         val imageView = ImageView(context)
         val layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -252,9 +296,24 @@ class EditTaskDialogFragment : DialogFragment() {
         taskAttachments.addView(imageView)
 
         imageView.setOnLongClickListener {
-            removeImageView(imageView, uri)
+            removeImageView(imageView, uri,null)
             true
         }
+    }
+
+    private fun removeImageView(imageView: ImageView, uri: Uri, file: File?) {
+        taskAttachments.removeView(imageView)
+
+        val iterator = selectedAttachments.iterator()
+        while (iterator.hasNext()) {
+            val selectedUri = iterator.next()
+            if (selectedUri.equalsByString(uri)) {
+                iterator.remove()
+                break
+            }
+        }
+
+        file?.delete()
     }
 
     private fun formatDate(date: Date?): String {
@@ -264,17 +323,17 @@ class EditTaskDialogFragment : DialogFragment() {
         } ?: "Set execution time"
     }
 
-    private fun removeImageView(imageView: ImageView, uri: Uri) {
-        taskAttachments.removeView(imageView)
-        selectedAttachments.remove(uri)
-    }
-
     private fun removeLeadingSemicolon(uriString: String): String {
         return if (uriString.startsWith(";")) {
             uriString.substring(1)
         } else {
             uriString
         }
+    }
+
+    private fun Uri.equalsByString(other: Uri?): Boolean {
+        if (this == other) return true
+        return this.toString() == other.toString()
     }
 
 }

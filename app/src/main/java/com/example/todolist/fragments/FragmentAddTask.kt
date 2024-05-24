@@ -17,11 +17,15 @@ import java.util.Calendar
 import java.util.Date
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.net.toUri
 import com.bumptech.glide.Glide
 import com.example.todolist.database.TaskModel
 import com.example.todolist.viewModels.TasksViewModel
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.textfield.TextInputEditText
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -30,6 +34,13 @@ class FragmentAddTask: Fragment() {
 
 
 
+    private val photosDirectory: File by lazy {
+        File(requireContext().getExternalFilesDir(null), "photos").apply {
+            if (!exists()) {
+                mkdirs()
+            }
+        }
+    }
 
     private lateinit var mainActivity : MainActivity
     private lateinit var tasksViewModel: TasksViewModel
@@ -54,7 +65,6 @@ class FragmentAddTask: Fragment() {
         ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
         uri?.let {
-            selectedAttachments.add(it)
             addImageView(it)
         }
     }
@@ -87,7 +97,6 @@ class FragmentAddTask: Fragment() {
         addAttachments = view.findViewById(R.id.addAttachments)
         addTaskButton = view.findViewById(R.id.addTaskButton)
         selectedAttachmentsLayout = view.findViewById(R.id.selectedAttachmentsLayout)
-
 
 
         if (savedInstanceState != null) {
@@ -197,35 +206,60 @@ class FragmentAddTask: Fragment() {
         }
     }
 
+
+
+    private fun saveImageToInternalStorage(uri: Uri): File? {
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
+        val file = File(photosDirectory, "${System.currentTimeMillis()}.jpg")
+        try {
+            FileOutputStream(file).use { outputStream ->
+                inputStream?.copyTo(outputStream)
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return null
+        } finally {
+            inputStream?.close()
+        }
+
+        val filePath = Uri.fromFile(file)
+        selectedAttachments.add(filePath)
+
+        return file
+    }
     private fun addImageView(uri: Uri) {
-        val imageView = ImageView(context)
-        val layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        imageView.layoutParams = layoutParams
+        val file = saveImageToInternalStorage(uri)
+        file?.let {
+            val imageView = ImageView(context)
+            val layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            imageView.layoutParams = layoutParams
 
-        Glide.with(this)
-            .load(uri)
-            .into(imageView)
+            Glide.with(this)
+                .load(uri)
+                .into(imageView)
 
-        selectedAttachmentsLayout.addView(imageView)
+            selectedAttachmentsLayout.addView(imageView)
 
-        imageView.setOnLongClickListener {
-            removeImageView(imageView, uri)
-            true
+            imageView.setOnLongClickListener {
+                removeImageView(imageView, Uri.fromFile(file), file)
+                true
+            }
         }
     }
 
+    private fun removeImageView(imageView: ImageView, uri: Uri, file: File) {
+        selectedAttachmentsLayout.removeView(imageView)
+        selectedAttachments.remove(uri)
+        file.delete()
+    }
     private fun formatDate(date: Date?): String {
         return date?.let {
             val sdf = SimpleDateFormat("HH:mm:ss dd-MM-yyyy", Locale.getDefault())
             sdf.format(it)
         } ?: "No execution time"
-    }
-    private fun removeImageView(imageView: ImageView, uri: Uri) {
-        selectedAttachmentsLayout.removeView(imageView)
-        selectedAttachments.remove(uri)
     }
     override fun onDestroyView() {
         super.onDestroyView()

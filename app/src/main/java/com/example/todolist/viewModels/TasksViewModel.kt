@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.todolist.NotificationUtils
 import com.example.todolist.database.TaskModel
 import com.example.todolist.database.TasksRepository
+import java.io.File
 
 class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
     private val _tasksData = MutableLiveData<List<TaskModel>>()
@@ -58,6 +59,13 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
         val currentTasks = _tasksData.value?.toMutableList() ?: mutableListOf()
         currentTasks.remove(taskToDelete)
         _tasksData.value = currentTasks
+
+//        taskToDelete.attachments?.forEach { attachmentUriString ->
+//            val file = File(context.getExternalFilesDir(null), attachmentUriString)
+//            if (file.exists()) {
+//                file.delete()
+//            }
+//        }
 
     }
 

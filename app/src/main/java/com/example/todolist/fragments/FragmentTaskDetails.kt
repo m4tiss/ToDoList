@@ -150,8 +150,11 @@ class FragmentTaskDetails : Fragment() {
                 imageView.layoutParams = layoutParams
                 imageView.setPadding(0, 2, 0, 2)
 
+
+                val uri = Uri.parse(attachment)
+                println(uri)
                 Glide.with(this)
-                    .load(Uri.parse(attachment))
+                    .load(uri)
                     .into(imageView)
                 taskAttachments.addView(imageView)
             }
