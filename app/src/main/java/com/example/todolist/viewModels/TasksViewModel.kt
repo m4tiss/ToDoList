@@ -59,14 +59,6 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
         val currentTasks = _tasksData.value?.toMutableList() ?: mutableListOf()
         currentTasks.remove(taskToDelete)
         _tasksData.value = currentTasks
-
-//        taskToDelete.attachments?.forEach { attachmentUriString ->
-//            val file = File(context.getExternalFilesDir(null), attachmentUriString)
-//            if (file.exists()) {
-//                file.delete()
-//            }
-//        }
-
     }
 
     fun updateTask(task: TaskModel) {

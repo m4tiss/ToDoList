@@ -69,23 +69,24 @@ class TasksAdapter(private val context: Context,
         }
     }
 
-    private fun showDeleteConfirmationDialog(position: Int) {
+    private fun showDeleteConfirmationDialog(position: Int, callback: (Boolean) -> Unit) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Delete Task")
         builder.setMessage("Are you sure you want to delete this task?")
         builder.setPositiveButton("Yes") { dialog, _ ->
-            deleteTask(position)
+            callback(true)
             dialog.dismiss()
         }
         builder.setNegativeButton("No") { dialog, _ ->
+            callback(false)
             dialog.dismiss()
         }
         builder.setOnCancelListener {
+            callback(false)
         }
         val dialog = builder.create()
         dialog.show()
     }
-
 
     val itemTouchHelper by lazy {
         val simpleItemTouchCallback =
@@ -100,7 +101,13 @@ class TasksAdapter(private val context: Context,
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val position = viewHolder.adapterPosition
-                    showDeleteConfirmationDialog(position)
+                    showDeleteConfirmationDialog(position) { shouldDelete ->
+                        if (shouldDelete) {
+                            deleteTask(position)
+                        } else {
+                            notifyItemChanged(position)
+                        }
+                    }
                 }
             }
         ItemTouchHelper(simpleItemTouchCallback)
