@@ -121,7 +121,7 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
                 val category = cursor.getString(cursor.getColumnIndex(KEY_CATEGORY))
                 val attachments = cursor.getString(cursor.getColumnIndex(KEY_ATTACHMENTS))
 
-                val task: TaskModel? = if (title.isNullOrEmpty() || description.isNullOrEmpty() || creationTime.isNullOrEmpty() ||
+                val task: TaskModel? = if (creationTime.isNullOrEmpty() ||
                     completed < 0 || notificationEnabled < 0 || category.isNullOrEmpty()
                     )
                 {

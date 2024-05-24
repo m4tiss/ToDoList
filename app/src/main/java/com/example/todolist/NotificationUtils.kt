@@ -18,8 +18,6 @@ object NotificationUtils {
 
     private const val CHANNEL_ID = "ToDoAppNotificationChannel"
     private const val CHANNEL_NAME = "To Do Notifications"
-    private const val NOTIFICATION_ID = 123
-    private const val TAG = "NotificationUtils"
 
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -51,11 +49,13 @@ object NotificationUtils {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
+            println(task.id)
             val notificationTime = getNotificationTime(context)
 
             val executionTime = task.executionTime.time
             val notifyTime = executionTime - notificationTime
-            if(notifyTime > 0) alarmManager.setExact(AlarmManager.RTC_WAKEUP, notifyTime, pendingIntent)
+//            if(notifyTime > 0)
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, notifyTime, pendingIntent)
         }
     }
 
@@ -79,7 +79,10 @@ object NotificationUtils {
             val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-            val intent = Intent(context, MainActivity::class.java)
+            val intent = Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                putExtra("task_id", taskId)
+            }
             val pendingIntent = PendingIntent.getActivity(
                 context,
                 0,

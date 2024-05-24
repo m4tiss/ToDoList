@@ -157,24 +157,24 @@ class MainActivity : AppCompatActivity() {
         if (!checkNotificationPermission()) {
             showNotificationPermissionDialog()
         }
-//        intent?.extras?.let {
-//            val taskId = it.getInt("task_id", 0)
-//            if (taskId != 0) {
-//                tasksViewModel.tasksData.value?.find { task -> task.id == taskId }?.let { task ->
-//                    val fragment = FragmentTaskDetails.newInstance(task)
-//                    supportFragmentManager.beginTransaction()
-//                        .setCustomAnimations(
-//                            androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom,
-//                            androidx.appcompat.R.anim.abc_shrink_fade_out_from_bottom,
-//                            androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom,
-//                            androidx.appcompat.R.anim.abc_shrink_fade_out_from_bottom
-//                        )
-//                        .replace(R.id.main, fragment)
-//                        .addToBackStack(null)
-//                        .commit()
-//                }
-//            }
-//        }
+        val taskId = intent.getIntExtra("task_id", 0)
+
+        if (taskId != 0) {
+            tasksViewModel.tasksData.value?.find { it.id == taskId }?.let { task ->
+                val fragment = FragmentTaskDetails.newInstance(task)
+                supportFragmentManager.beginTransaction()
+                    .setCustomAnimations(
+                        androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom,
+                        androidx.appcompat.R.anim.abc_shrink_fade_out_from_bottom,
+                        androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom,
+                        androidx.appcompat.R.anim.abc_shrink_fade_out_from_bottom
+                    )
+                    .replace(R.id.main, fragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
+
     }
     private fun showBottomSheet() {
         bottomSheetFragment.show(supportFragmentManager, ModalBottomSheet.TAG)
