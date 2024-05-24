@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
 import com.bumptech.glide.Glide
 import com.example.todolist.MainActivity
 import com.example.todolist.R
@@ -25,11 +26,9 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class EditTaskDialogFragment(
-    private val task: TaskModel,
-    private val onCloseFragment: () -> Unit
-) : DialogFragment() {
+class EditTaskDialogFragment : DialogFragment() {
 
+    private lateinit var task: TaskModel
 
     private lateinit var mainActivity : MainActivity
     private lateinit var tasksViewModel: TasksViewModel
@@ -48,6 +47,8 @@ class EditTaskDialogFragment(
     private var isProgrammaticChangeCategory = false
     private var selectedCategory = ""
 
+    private var onCloseFragment: () -> Unit = {}
+
     private val openDocumentLauncher = registerForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
@@ -57,11 +58,65 @@ class EditTaskDialogFragment(
         }
     }
 
+    companion object {
+        private const val ARG_TASK_ID = "task_id"
+        private const val ARG_TASK_TITLE = "task_title"
+        private const val ARG_TASK_DESCRIPTION = "task_description"
+        private const val ARG_CREATION_TIME = "creation_time"
+        private const val ARG_EXECUTION_TIME = "execution_time"
+        private const val ARG_COMPLETED = "completed"
+        private const val ARG_NOTIFICATION_ENABLED = "notification_enabled"
+        private const val ARG_CATEGORY = "category"
+        private const val ARG_ATTACHMENTS = "attachments"
+
+        fun newInstance(task: TaskModel): EditTaskDialogFragment {
+            val fragment = EditTaskDialogFragment()
+            val args = Bundle().apply {
+                putInt(ARG_TASK_ID, task.id)
+                putString(ARG_TASK_TITLE, task.title)
+                putString(ARG_TASK_DESCRIPTION, task.description)
+                putLong(ARG_CREATION_TIME, task.creationTime.time)
+                putLong(ARG_EXECUTION_TIME, task.executionTime?.time ?: -1L)
+                putInt(ARG_COMPLETED, task.completed)
+                putInt(ARG_NOTIFICATION_ENABLED, task.notificationEnabled)
+                putString(ARG_CATEGORY, task.category)
+                putStringArrayList(ARG_ATTACHMENTS, ArrayList(task.attachments))
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     @SuppressLint("MissingInflatedId")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireActivity())
         val inflater = requireActivity().layoutInflater
         val view = inflater.inflate(R.layout.fragment_edit_task, null)
+
+        arguments?.let {
+            val taskId = it.getInt(ARG_TASK_ID)
+            val taskTitle = it.getString(ARG_TASK_TITLE) ?: ""
+            val taskDescription = it.getString(ARG_TASK_DESCRIPTION) ?: ""
+            val creationTime = Date(it.getLong(ARG_CREATION_TIME))
+            val executionTime = it.getLong(ARG_EXECUTION_TIME).takeIf { it != -1L }?.let { Date(it) }
+            val completed = it.getInt(ARG_COMPLETED)
+            val notificationEnabled = it.getInt(ARG_NOTIFICATION_ENABLED)
+            val category = it.getString(ARG_CATEGORY) ?: ""
+            val attachments = it.getStringArrayList(ARG_ATTACHMENTS) ?: listOf<String>()
+
+            task = TaskModel(
+                id = taskId,
+                title = taskTitle,
+                description = taskDescription,
+                creationTime = creationTime,
+                executionTime = executionTime,
+                completed = completed,
+                notificationEnabled = notificationEnabled,
+                category = category,
+                attachments = attachments
+            )
+        }
+
 
         taskTitle = view.findViewById(R.id.titleEditTask)
         taskDescription = view.findViewById(R.id.descriptionEditTask)
@@ -166,7 +221,8 @@ class EditTaskDialogFragment(
                 )
 
                 tasksViewModel.updateTask(updatedTask)
-                onCloseFragment()
+                val fragmentManager = requireActivity().supportFragmentManager
+                fragmentManager.popBackStack()
                 dialog.dismiss()
             }
             .setNegativeButton("Cancel") { dialog, id ->

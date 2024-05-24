@@ -39,6 +39,7 @@ class FragmentTaskDetails : Fragment() {
     private lateinit var taskAttachments: LinearLayout
     private lateinit var textVisibility: TextView
     private lateinit var editTask: FloatingActionButton
+    private lateinit var dialog:EditTaskDialogFragment
 
 
 
@@ -114,6 +115,8 @@ class FragmentTaskDetails : Fragment() {
         textVisibility = view.findViewById(R.id.textVisibility)
 
 
+        dialog = EditTaskDialogFragment.newInstance(task)
+
         taskTitle.text = task.title
         taskDescription.text = task.description
         taskCategory.text = task.category
@@ -161,8 +164,8 @@ class FragmentTaskDetails : Fragment() {
         mainActivity = activity as MainActivity
         tasksViewModel = mainActivity.tasksViewModel
         mainActivity.addTask.visibility = View.GONE
+
         editTask.setOnClickListener {
-            val dialog = EditTaskDialogFragment(task,::onCloseFragment)
             dialog.show(childFragmentManager, "EditTaskDialogFragment")
         }
         notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -174,10 +177,6 @@ class FragmentTaskDetails : Fragment() {
         }
 
         displayAttachments()
-    }
-
-    private fun onCloseFragment() {
-        parentFragmentManager.popBackStack()
     }
 
     override fun onDestroyView() {
