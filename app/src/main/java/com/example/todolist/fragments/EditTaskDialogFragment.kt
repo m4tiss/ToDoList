@@ -45,7 +45,6 @@ class EditTaskDialogFragment : DialogFragment() {
     private lateinit var catJob: Button
     private var executionDate: Date? = null
     private val selectedAttachments = mutableListOf<String>()
-    private var isProgrammaticChangeCategory = false
     private var selectedCategory = ""
 
     private val photosDirectory: File by lazy {
@@ -153,14 +152,10 @@ class EditTaskDialogFragment : DialogFragment() {
 
         selectedCategory = task.category
 
-            categoryEditTask.addOnButtonCheckedListener { group, selectedId, isSelected ->
-            if (!isProgrammaticChangeCategory && isSelected) {
-                isProgrammaticChangeCategory = true
-                val checkedButton = group.findViewById<Button>(selectedId)
+        categoryEditTask.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            if (isChecked) {
+                val checkedButton = group.findViewById<Button>(checkedId)
                 selectedCategory = checkedButton.tag.toString()
-                categoryEditTask.clearChecked()
-                categoryEditTask.check(selectedId)
-                isProgrammaticChangeCategory = false
             }
         }
 

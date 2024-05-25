@@ -58,8 +58,7 @@ class FragmentAddTask: Fragment() {
     private lateinit var catFamily: Button
     private lateinit var catJob: Button
     private val selectedAttachments = mutableListOf<Uri>()
-    private var isProgrammaticChangeCategory = false
-    var selectedCategory = "Family"
+    private var selectedCategory = "Family"
 
     private val openDocumentLauncher = registerForActivityResult(
         ActivityResultContracts.OpenDocument()
@@ -120,14 +119,10 @@ class FragmentAddTask: Fragment() {
 
         categoryNewTask.check(catFamily.id)
 
-        categoryNewTask.addOnButtonCheckedListener { group, selectedId, isSelected ->
-            if (!isProgrammaticChangeCategory && isSelected) {
-                isProgrammaticChangeCategory = true
-                val checkedButton = group.findViewById<Button>(selectedId)
+        categoryNewTask.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            if (isChecked) {
+                val checkedButton = group.findViewById<Button>(checkedId)
                 selectedCategory = checkedButton.tag as? String ?: "Family"
-                categoryNewTask.clearChecked()
-                categoryNewTask.check(selectedId)
-                isProgrammaticChangeCategory = false
             }
         }
 

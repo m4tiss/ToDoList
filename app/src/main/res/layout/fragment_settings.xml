@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <com.google.android.material.bottomsheet.BottomSheetDragHandleView
@@ -50,6 +51,8 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical"
+            app:singleSelection="true"
+            app:selectionRequired="true"
             android:layout_weight="2">
 
             <Button
@@ -142,6 +145,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:gravity="center"
+            app:singleSelection="true"
+            app:selectionRequired="true"
             android:layout_weight="2">
 
             <Button

@@ -42,8 +42,6 @@ class FragmentSettings: Fragment() {
     private lateinit var jobButton: Button
     private lateinit var urgentButton: Button
     private lateinit var nonUrgentButton: Button
-    private var isProgrammaticChangeCategory = false
-    private var isProgrammaticChangeSort = false
 
 
 
@@ -115,17 +113,10 @@ class FragmentSettings: Fragment() {
         checkButtonWithTag(toggleCategoryButton, category ?: "All")
 
 
-        toggleCategoryButton.addOnButtonCheckedListener { group, selectedId, isSelected ->
-            if (!isProgrammaticChangeCategory && isSelected) {
-                isProgrammaticChangeCategory = true
-
-                val checkedButton = group.findViewById<Button>(selectedId)
+        toggleCategoryButton.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            if (isChecked) {
+                val checkedButton = group.findViewById<Button>(checkedId)
                 sharedPreferences.edit().putString("Category", checkedButton.tag as? String ?: "All").apply()
-
-
-                toggleCategoryButton.clearChecked()
-                toggleCategoryButton.check(selectedId)
-                isProgrammaticChangeCategory = false
                 mainActivity.filterTasks()
             }
         }
@@ -133,21 +124,15 @@ class FragmentSettings: Fragment() {
         val sortType = sharedPreferences.getString("SortType", "All")
         checkButtonWithTag(toggleSortButton, sortType ?: "Urgent")
 
-        toggleSortButton.addOnButtonCheckedListener { group, selectedId, isSelected ->
-            if (!isProgrammaticChangeSort && isSelected) {
-                isProgrammaticChangeSort = true
 
-
-                val checkedButton = group.findViewById<Button>(selectedId)
+        toggleSortButton.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            if (isChecked) {
+                val checkedButton = group.findViewById<Button>(checkedId)
                 sharedPreferences.edit().putString("SortType", checkedButton.tag as? String ?: "Urgent").apply()
-
-
-                toggleSortButton.clearChecked()
-                toggleSortButton.check(selectedId)
-                isProgrammaticChangeSort = false
                 mainActivity.filterTasks()
             }
         }
+
 
         spinnerStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
