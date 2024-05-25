@@ -208,7 +208,7 @@ class EditTaskDialogFragment : DialogFragment() {
                 val title = taskTitle.text.toString()
                 val description = taskDescription.text.toString()
 
-                val updatedAttachments = selectedAttachments
+                val updatedAttachments = selectedAttachments.filter { it.isNotEmpty() }
 
                 val updatedTask = task.copy(
                     title = title,
