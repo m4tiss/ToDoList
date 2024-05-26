@@ -1,5 +1,4 @@
 import android.annotation.SuppressLint
-import android.app.Notification
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -26,7 +25,6 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        println("przed baza")
 
         val createTableQuery = "CREATE TABLE $TABLE_NAME (" +
                 "$KEY_ID INTEGER PRIMARY KEY," +
@@ -78,7 +76,6 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         val values = ContentValues()
         values.put(KEY_COMPLETED, newStatus)
 
-        println("zmieniam na: " + newStatus)
         val selection = "$KEY_ID = ?"
         val selectionArgs = arrayOf(taskId.toString())
 
@@ -92,7 +89,6 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         val values = ContentValues()
         values.put(KEY_NOTIFICATION_ENABLED, newNotification)
 
-        println("zmieniam na: " + newNotification)
         val selection = "$KEY_ID = ?"
         val selectionArgs = arrayOf(taskId.toString())
 
@@ -109,7 +105,6 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         val db = this.readableDatabase
         val cursor = db.rawQuery(selectQuery, null)
         if (cursor.moveToFirst()) {
-            println("czytamy")
             do {
                 val id = cursor.getInt(cursor.getColumnIndex(KEY_ID))
                 val title = cursor.getString(cursor.getColumnIndex(KEY_TITLE))
@@ -121,9 +116,7 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
                 val category = cursor.getString(cursor.getColumnIndex(KEY_CATEGORY))
                 val attachments = cursor.getString(cursor.getColumnIndex(KEY_ATTACHMENTS))
 
-                val task: TaskModel? = if (creationTime.isNullOrEmpty() ||
-                    completed < 0 || notificationEnabled < 0 || category.isNullOrEmpty()
-                    )
+                val task: TaskModel? = if (creationTime.isNullOrEmpty() || completed < 0 || notificationEnabled < 0 || category.isNullOrEmpty())
                 {
                     null
                 } else {
@@ -187,6 +180,8 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
     }
 
     private fun deserializeAttachments(serialized: String): List<String> {
-        return serialized.split(";")
+        val attachments = serialized.split(";")
+        return attachments.filter { it.isNotEmpty() }
     }
+
 }
