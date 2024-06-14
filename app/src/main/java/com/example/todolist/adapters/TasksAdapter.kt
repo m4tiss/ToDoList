@@ -3,11 +3,13 @@ package com.example.todolist.adapters
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -22,7 +24,13 @@ class TasksAdapter(private val context: Context,
                     private val onTaskItemClick: (Int) -> Unit):
     RecyclerView.Adapter<TasksAdapter.TaskViewHolder>() {
 
+
+    private val sharedPreferences: SharedPreferences =
+        context.getSharedPreferences("com.example.todolist.preferences", Context.MODE_PRIVATE)
+
+
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val taskLayout: LinearLayout = itemView.findViewById(R.id.taskLayout)
         val taskTitleTextView: TextView = itemView.findViewById(R.id.taskTitle)
         val checkBox: CheckBox = itemView.findViewById(R.id.checkbox)
         val attachmentIcon: ImageView = itemView.findViewById(R.id.attachmentIcon)
@@ -38,6 +46,13 @@ class TasksAdapter(private val context: Context,
         val currentTask = taskList[position]
         holder.taskTitleTextView.text = currentTask.title
         holder.checkBox.isChecked = currentTask.completed == 1
+
+        val backgroundColor = sharedPreferences.getString("TaskColor", "RED")
+        when (backgroundColor) {
+            "RED" -> holder.taskLayout.setBackgroundResource(R.drawable.task_item_background_red)
+            "BLUE" -> holder.taskLayout.setBackgroundResource(R.drawable.task_item_background_blue)
+            "ORANGE" ->  holder.taskLayout.setBackgroundResource(R.drawable.task_item_background_orange)
+        }
 
         holder.checkBox.setOnClickListener {
             val taskId = currentTask.id

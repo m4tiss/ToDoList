@@ -34,6 +34,15 @@
                 android:src="@drawable/ic_search" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/colorIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:clickable="true"
+                android:src="@drawable/ic_color"
+                android:layout_gravity="center"/>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/settingsIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

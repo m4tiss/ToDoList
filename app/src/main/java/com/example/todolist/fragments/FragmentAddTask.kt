@@ -17,7 +17,6 @@ import java.util.Calendar
 import java.util.Date
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SwitchCompat
-import androidx.core.net.toUri
 import com.bumptech.glide.Glide
 import com.example.todolist.database.TaskModel
 import com.example.todolist.viewModels.TasksViewModel

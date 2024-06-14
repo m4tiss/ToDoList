@@ -30,8 +30,17 @@
                     android:id="@+id/searchButton"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:padding="20sp"
+                    android:padding="10sp"
                     android:src="@drawable/ic_search" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/colorIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:clickable="true"
+                    android:src="@drawable/ic_color_2"
+                    android:layout_gravity="center"/>
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/settingsIcon"

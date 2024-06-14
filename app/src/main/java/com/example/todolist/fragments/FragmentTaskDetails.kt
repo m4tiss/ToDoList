@@ -1,6 +1,8 @@
 package com.example.todolist.fragments
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -29,6 +31,7 @@ class FragmentTaskDetails : Fragment() {
     private lateinit var mainActivity : MainActivity
     private lateinit var tasksViewModel: TasksViewModel
 
+    private lateinit var taskDetailLayout: LinearLayout
     private lateinit var taskTitle: TextView
     private lateinit var taskDescription: TextView
     private lateinit var executionTime: TextView
@@ -103,6 +106,7 @@ class FragmentTaskDetails : Fragment() {
             )
         }
 
+        taskDetailLayout = view.findViewById(R.id.taskDetailLayout)
         editTask = view.findViewById(R.id.editTask)
         taskAttachments = view.findViewById(R.id.taskAttachments)
         taskTitle = view.findViewById(R.id.titleTextView)
@@ -167,6 +171,14 @@ class FragmentTaskDetails : Fragment() {
         mainActivity = activity as MainActivity
         tasksViewModel = mainActivity.tasksViewModel
         mainActivity.addTask.visibility = View.GONE
+
+
+        val backgroundColor =  mainActivity.sharedPreferences.getString("TaskColor", "RED")
+        when (backgroundColor) {
+            "RED" -> taskDetailLayout.setBackgroundResource(R.drawable.title_description_panel_red)
+            "BLUE" -> taskDetailLayout.setBackgroundResource(R.drawable.title_description_panel_blue)
+            "ORANGE" -> taskDetailLayout.setBackgroundResource(R.drawable.title_description_panel_orange)
+        }
 
         editTask.setOnClickListener {
             dialog.show(childFragmentManager, "EditTaskDialogFragment")

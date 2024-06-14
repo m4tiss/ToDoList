@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.EditText
-import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +23,9 @@ import android.Manifest
 import android.app.NotificationManager
 import android.content.Intent
 import android.content.SharedPreferences
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationManagerCompat
@@ -32,11 +34,12 @@ import com.example.todolist.database.TaskModel
 class MainActivity : AppCompatActivity() {
 
     lateinit var bottomSheetFragment : ModalBottomSheet
-    private lateinit var settingsImageView: ImageView
+    private lateinit var settingsActionButton: FloatingActionButton
     lateinit var recyclerTasks: RecyclerView
     lateinit var addTask: FloatingActionButton
-    private lateinit var searchButton: ImageView
+    private lateinit var colorActionButton: FloatingActionButton
     private lateinit var searchText: EditText
+    private lateinit var searchButton: ImageView
     private lateinit var databaseHandler: DatabaseHandler
     lateinit var tasksViewModel: TasksViewModel
     private lateinit var tasksRepositoryImpl: TasksRepositoryImpl
@@ -51,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint("MissingInflatedId", "NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -66,7 +69,8 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        settingsImageView = findViewById(R.id.settingsIcon)
+        settingsActionButton = findViewById(R.id.settingsIcon)
+        colorActionButton = findViewById(R.id.colorIcon)
         addTask = findViewById(R.id.addTask)
         searchButton = findViewById(R.id.searchButton)
         searchText = findViewById(R.id.searchText)
@@ -145,9 +149,19 @@ class MainActivity : AppCompatActivity() {
         recyclerTasks.adapter = adapterRecycler
         adapterRecycler.itemTouchHelper.attachToRecyclerView(recyclerTasks)
 
-        settingsImageView.setOnClickListener {
+        settingsActionButton.setOnClickListener {
             searchText.text.clear()
             showBottomSheet()
+        }
+        colorActionButton.setOnClickListener {
+            val currentColorName = sharedPreferences.getString("TaskColor", TaskColor.RED.colorName)
+            val currentColor = TaskColor.entries.find { it.colorName.equals(currentColorName, ignoreCase = true) }
+                ?: TaskColor.RED
+
+            val nextColor = TaskColor.nextColor(currentColor)
+            sharedPreferences.edit().putString("TaskColor", nextColor.colorName).apply()
+
+            adapterRecycler.notifyDataSetChanged()
         }
 
         if (!checkPermission()) {
@@ -247,6 +261,9 @@ class MainActivity : AppCompatActivity() {
         }
         if (!sharedPreferences.contains("Status")) {
             sharedPreferences.edit().putString("Status", "All").apply()
+        }
+        if (!sharedPreferences.contains("TaskColor")) {
+            sharedPreferences.edit().putString("TaskColor", "RED").apply()
         }
     }
 
